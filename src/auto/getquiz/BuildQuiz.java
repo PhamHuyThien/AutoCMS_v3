@@ -103,10 +103,10 @@ public class BuildQuiz {
             quiz.setName(name);
         }
         //set score
-        double score = Double.parseDouble(elmData.attr("data-problem-score"));
+        double score = Function.roundReal(Double.parseDouble(elmData.attr("data-problem-score")), 3);
         quiz.setScore(score);
         //set score posible
-        double scorePosible = Double.parseDouble(elmData.attr("data-problem-total-possible"));
+        double scorePosible = Function.roundReal(Double.parseDouble(elmData.attr("data-problem-total-possible")), 3);
         quiz.setScorePossible(scorePosible);
         //set QuizQuestion
         String content = elmData.attr("data-content");
@@ -153,9 +153,10 @@ public class BuildQuiz {
             try {
                 quizQuestion.setListValue(buildListValueText(elmPolyInput));
             } catch (BuildQuizException e) {
-                continue;
+                //not continue;
             }
-            quizQuestion.setMultiChoice(elmPolyInput.select("input").size() > 0);
+            quizQuestion.setAmountInput(elmPolyInput.select("input").size());
+            quizQuestion.setMultiChoice(quizQuestion.getAmountInput()>1);
             alQuizQuestions.add(quizQuestion);
         }
         QuizQuestion[] quizQuestions = new QuizQuestion[alQuizQuestions.size()];

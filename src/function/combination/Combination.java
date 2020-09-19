@@ -21,7 +21,7 @@ public class Combination {
 
     private ArrayList<ArrayList<Integer>> alInt;
     private boolean build;
-    
+
     public Combination(int k, int n) {
         this.k = k;
         this.n = n;
@@ -32,34 +32,34 @@ public class Combination {
         this.k = k;
         this.n = n;
         this.allResult = allResult;
-        initCombination();
     }
 
-    public void build() throws InputException {
-        if(build){
-            return;
-        }
-        build = !build;
-        if(k<1){
-            throw new InputException("K >= 1!");
-        }
-        if(n<1){
-            throw new InputException("N >= 1!");
-        }
-        if(k>n){
-            throw new InputException("K <= N!");
-        }
-        for (int i = k; i <= (allResult ? n : k); i++) {
-            int arrTmp[] = createTmpArrCombination(i+1);
-            combination(i, n, 1, arrTmp);
-        }
-    }
-    
-    public ArrayList<ArrayList<Integer>> getResult() throws InputException{
+    public ArrayList<ArrayList<Integer>> getResult() throws InputException {
         build();
         return alInt;
     }
-    
+
+    public void build() throws InputException {
+        if (build) {
+            return;
+        }
+        build = !build;
+        if (k < 1) {
+            throw new InputException("K >= 1!");
+        }
+        if (n < 1) {
+            throw new InputException("N >= 1!");
+        }
+        if (k > n) {
+            throw new InputException("K <= N!");
+        }
+        initCombination();
+        for (int i = k; i <= (allResult ? n : k); i++) {
+            int arrTmp[] = createTmpArrCombination(i + 1);
+            combination(i, n, 1, arrTmp);
+        }
+    }
+
     private void combination(int k, int n, int i, int[] arrTmp) {
         for (int j = arrTmp[i - 1] + 1; j <= n - k + i; j++) {
             arrTmp[i] = j;

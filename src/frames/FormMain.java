@@ -5,8 +5,6 @@ import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
-import auto.solution.exception.BuildAnswerException;
-import auto.solution.exception.EssayQuestionException;
 import main.Main;
 import function.Function;
 import java.io.IOException;
@@ -290,10 +288,12 @@ public class FormMain extends javax.swing.JFrame {
                     showProcess("Đăng nhập không thành công!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
+                    return;
                 } catch (IOException ex) {
                     showProcess("Kết nối đăng nhập không thành công!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
+                    return;
                 }
 
                 Main.cmsAccount = Main.cmsLogin.getCmsAccount();
@@ -342,18 +342,7 @@ public class FormMain extends javax.swing.JFrame {
                     cmsSolution.setCmsAccount(Main.cmsAccount);
                     cmsSolution.setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
                     cmsSolution.setQuiz(Main.quiz[i]);
-                    try {
-                        cmsSolution.solution();
-                    } catch (ParseException ex) {
-                        Function.debug("name=" + Main.quiz[i].getName() + " => " + ex.toString());
-                        err++;
-                    } catch (IOException | EssayQuestionException ex) {
-                        Function.debug("name=" + Main.quiz[i].getName() + " => " + ex.toString());
-                        err++;
-                    } catch (BuildAnswerException ex) {
-                        Function.debug("name=" + Main.quiz[i].getName() + " => " + ex.toString());
-                        err++;
-                    }
+                    cmsSolution.solution();
                     if (cmsSolution.isDone()) {
                         done++;
                     }
@@ -406,7 +395,7 @@ public class FormMain extends javax.swing.JFrame {
 
             Main.quiz = cmsQuizGet.getQuiz();
             Function.debug("");
-            for(Quiz q: Main.quiz){
+            for (Quiz q : Main.quiz) {
                 Function.debug(q.toString());
             }
             inpSetEnbled(true);

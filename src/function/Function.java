@@ -2,6 +2,8 @@ package function;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.text.Normalizer;
@@ -21,6 +23,19 @@ import javax.net.ssl.X509TrustManager;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Function {
+
+    public static double roundReal(double d, int index) {
+        return Double.parseDouble(String.format("%." + index + "g%n", d));
+    }
+
+    public static String URLEncoder(String url) {
+        String encoder = null;
+        try {
+            encoder = URLEncoder.encode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return encoder;
+    }
 
     //parse value type text để send request
     public static String convertVIToEN(String str) {

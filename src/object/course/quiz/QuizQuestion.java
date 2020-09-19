@@ -16,24 +16,13 @@ public class QuizQuestion {
     private String question;
     private String key;
     private String[] listValue;
+    private int amountInput;
     private boolean multiChoice;
     private String selectValue;
     private int testCount;
     private boolean correct;
 
     public QuizQuestion() {
-    }
-
-    public QuizQuestion(String name, String type, String question, String key, String[] listValue, boolean multiChoice, String selectValue, int testCount, boolean correct) {
-        this.name = name;
-        this.type = type;
-        this.question = question;
-        this.key = key;
-        this.listValue = listValue;
-        this.multiChoice = multiChoice;
-        this.selectValue = selectValue;
-        this.testCount = testCount;
-        this.correct = correct;
     }
 
     public String getName() {
@@ -74,6 +63,14 @@ public class QuizQuestion {
 
     public void setListValue(String[] listValue) {
         this.listValue = listValue;
+    }
+
+    public int getAmountInput() {
+        return amountInput;
+    }
+
+    public void setAmountInput(int amountInput) {
+        this.amountInput = amountInput;
     }
 
     public boolean isMultiChoice() {

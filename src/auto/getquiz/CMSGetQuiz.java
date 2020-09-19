@@ -72,7 +72,7 @@ public class CMSGetQuiz {
             return;
         }
         useRaw = !useRaw;
-        allLinkQuizRaw = getURLQuizRaw(cmsAccount, course);
+//        allLinkQuizRaw = getURLQuizRaw(cmsAccount, course);
     }
 
     public void getStandard() throws IOException, BuildQuizException {
@@ -82,6 +82,7 @@ public class CMSGetQuiz {
         useStandard = !useStandard;
         getRaw();
         hashsetQuiz = new HashSet<>();
+        allLinkQuizRaw = new String[]{"https://cms.poly.edu.vn/courses/course-v1:FPOLY+WEB3023+26.02.2020/courseware/136cd348dfd74b1bb0be0e46521d5f5b/160e7778c58a4c9c8b50b48a4c5d3b1b/1?activate_block_id=block-v1%3AFPOLY%2BWEB3023%2B26.02.2020%2Btype%40vertical%2Bblock%40ba66964328fb46f78ae271cca845294b"};
         getUrlQuizStandard(allLinkQuizRaw);
         this.quiz = sortQuiz(hashsetQuiz);
     }

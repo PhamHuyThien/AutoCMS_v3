@@ -9,9 +9,9 @@ package auto.solution.exception;
  *
  * @author Administrator
  */
-public class EssayQuestionException extends Exception {
+public class SolutionException extends Exception {
 
-    public EssayQuestionException(String content) {
+    public SolutionException(String content) {
         super(content);
     }
 }

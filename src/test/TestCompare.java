@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package auto.solution.exception;
+package test;
+
+import function.Function;
 
 /**
  *
  * @author Administrator
  */
-public class BuildAnswerException extends Exception {
-
-    public BuildAnswerException(String content) {
-        super(content);
+public class TestCompare {
+    public static void main(String[] args) {
+        System.out.println(Function.roundReal(7.999999, 3));
     }
 }

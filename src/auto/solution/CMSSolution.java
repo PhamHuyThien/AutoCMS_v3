@@ -1,16 +1,12 @@
 package auto.solution;
 
-import auto.solution.exception.BuildAnswerException;
-import auto.solution.exception.EssayQuestionException;
+import auto.solution.exception.SolutionException;
 import function.Function;
 import function.combination.Combination;
+import function.combination.Permutation;
 import function.combination.exception.InputException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.jsoup.Jsoup;
@@ -21,7 +17,6 @@ import object.cms.CMSAccount;
 import object.course.Course;
 import object.course.quiz.Quiz;
 import object.course.quiz.QuizQuestion;
-import org.json.simple.parser.ParseException;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -32,7 +27,9 @@ import request.support.HttpRequestHeader;
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com
  */
-public class CMSSolution implements Runnable {
+public class CMSSolution {
+
+    private static final int TIME_SLEEP_SOLUTION = 60000;
 
     private CMSAccount cmsAccount;
     private Course course;
@@ -81,66 +78,70 @@ public class CMSSolution implements Runnable {
         return done;
     }
 
-    public void solution() throws IOException, EssayQuestionException, ParseException, BuildAnswerException {
-
-        String paramPost = null, jsonResp = null, solutionContent = null;
-        int solutionTest = 0;
-        double solutionScore = 0.0, solutionScoreMax = 0.0;
-        boolean solutionChanged = false;
-
+    public void solution() {
+        //request init
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("cookie", cmsAccount.getCookie());
         httpRequestHeader.add("X-CSRFToken", cmsAccount.getCsrfToken());
         httpRequestHeader.add("Referer", quiz.getUrl());
-        HttpRequest httpRequest = null;
-
         //đã đủ điểm
-        if (quiz.getScore() == quiz.getScorePossible()) {
+        if (quiz.getScore() == totalMaxScore(quiz)) {
             done = true;
             return;
         }
-        
-        String urlPost = parseUrlPost();
-        do {
-            paramPost = parseParamPost();
-            System.out.println(paramPost);
-            if (paramPost == null) {
-                throw new EssayQuestionException("The question contains the essay answer!");
+        Function.debug(totalMaxScore(quiz) + " MAX");
+        final String urlPost = "https://cms.poly.edu.vn/courses/" + course.getId() + "/xblock/" + course.getId().replace("course", "block") + "+type@problem+block@" + parseHashKey(quiz.getQuizQuestion()[0].getKey()) + "/handler/xmodule_handler/problem_check";
+        for (;;) {
+            String paramPost = null;
+            try {
+                paramPost = parseParamPost();
+            } catch (SolutionException e) {
+                //
+                System.out.println("solution parseParamPost => "+e.toString());
+                continue;
             }
-            httpRequest = new HttpRequest(urlPost, paramPost, httpRequestHeader);
-            jsonResp = httpRequest.getResponseHTML();
-            Object o = JSONValue.parseWithException(jsonResp);
+            HttpRequest httpRequest = new HttpRequest(urlPost, paramPost, httpRequestHeader);
+            String jsonResp = null;
+            try {
+                jsonResp = httpRequest.getResponseHTML();
+            } catch (IOException ex) {
+                //
+                System.out.println("solution httpRequest => "+ex.toString());
+                continue;
+            }
+            System.out.println(jsonResp);
+            //
+            Object o = JSONValue.parse(jsonResp);
             JSONObject jsonObj = (JSONObject) o;
-            solutionTest = Integer.parseInt(jsonObj.get("attempts_used").toString());
-            solutionContent = String.valueOf(jsonObj.get("contents").toString());
-            solutionScore = Double.parseDouble(jsonObj.get("current_score").toString());
-            solutionChanged = Boolean.parseBoolean(jsonObj.get("success").toString());
-            solutionScoreMax = Double.parseDouble(jsonObj.get("total_possible").toString());
-
-            if (solutionScore == solutionScoreMax) {
+            String solutionContent = String.valueOf(jsonObj.get("contents").toString());
+            double solutionScore = Function.roundReal(Double.parseDouble(jsonObj.get("current_score").toString()), 3);
+            boolean solutionSuccess = Boolean.parseBoolean(jsonObj.get("success").toString());
+            //
+            if (solutionScore == totalMaxScore(quiz)) {
                 done = true;
                 break;
             }
-            quiz = checkResult(solutionContent, quiz);
-
-            Function.sleep(60000);
-
-        } while (true);
+            try {
+                quiz = checkResultSolution(solutionContent, quiz);
+            } catch (SolutionException ex) {
+                break;
+            }
+            Function.sleep(TIME_SLEEP_SOLUTION);
+        }
     }
 
     //tạo parampost cho request
-    private String parseParamPost() throws BuildAnswerException {
+    private String parseParamPost() throws SolutionException {
         QuizQuestion quizQuestion[] = quiz.getQuizQuestion();
         StringBuilder sb = new StringBuilder();
         //ghép các parampost từ quizQuestion, thành paramPost Full
         for (int i = 0; i < quizQuestion.length; i++) {
-            String ans = setChoice(quizQuestion[i]);
-            if (ans == null) {
-                return null;
-            }
+            //câu hỏi này là câu hỏi tự luận thì bỏ qua
+            if(quizQuestion[i].getListValue()==null) continue;
+            String ans = setValue(quizQuestion[i]);
             sb.append(ans).append("&");
             if (!quizQuestion[i].isCorrect()) { //hoàn thành rồi thì bỏ qua tăng test
-                quiz.getQuizQuestion()[i].setTestCount(quiz.getQuizQuestion()[i].getTestCount()+ 1);
+                quiz.getQuizQuestion()[i].setTestCount(quiz.getQuizQuestion()[i].getTestCount() + 1);
             }
             quiz.getQuizQuestion()[i].setSelectValue(ans); // set đáp án
         }
@@ -148,111 +149,82 @@ public class CMSSolution implements Runnable {
     }
 
     //convert quizQuestion sang paramPost, tự động ++ giá trị tiếp theo cho quizQUestion
-    private String setChoice(QuizQuestion quizQuestion) throws BuildAnswerException {
-
+    private String setValue(QuizQuestion quizQuestion) throws SolutionException {
         //đã hoàn thành thì chỉ lấy getAnswer()
         if (quizQuestion.isCorrect()) {
             return quizQuestion.getSelectValue();
-        } else if (quizQuestion.isMultiChoice()) { // đây là kiểu multichoice
+        }
+        // đây là kiểu multichoice
+        if (quizQuestion.isMultiChoice()) {
             //tạo mới biến global alInt chứa danh sách tổ hợp chập k của n phần tử
             try {
-                alInt = new Combination(2, quizQuestion.getListValue().length, true).getResult();
-            } catch (InputException e) {
-                throw new BuildAnswerException("setChoice => Input Combination Error!");
-            }
-            //nếu là input=text và multichoice => nhân đôi mảng (vì đáp án có thể ngược lại nữa (tổ hợp 1, đảo tổ hợp 1, tổ hợp 2, đảo tổ hợp 2....)
-            if (quizQuestion.getType().equals("text")) {
-                this.alInt = reverseAlInt(this.alInt);
-            }
-            StringBuilder sb = new StringBuilder();
-            int index = quizQuestion.getTestCount();
-            if (index < alInt.size()) {  //nếu có getTest có trong tổ hợp
-                //nếu là text: định dạng key=value1,value2...
                 if (quizQuestion.getType().equals("text")) {
-                    sb.append(quizQuestion.getName()).append("=");
+                    alInt = new Permutation(quizQuestion.getAmountInput(), quizQuestion.getListValue().length, true).getResult();
+                } else {
+                    alInt = new Combination(2, quizQuestion.getListValue().length, true).getResult();
                 }
-                for (ArrayList<Integer> alInteger : alInt) {
-                    for (Integer integer : alInteger) {
-                        try {
-                            if (quizQuestion.getType().equals("text")) { // kiểu text chỉ việc append value1,value2...
-                                sb.append(URLEncoder.encode(quizQuestion.getListValue()[integer], "utf-8")).append("%2C");
-                            } else { // kiểu checkbox => key[]=value1&key[]=value2.....
-                                sb.append(URLEncoder.encode(quizQuestion.getName(), "utf-8")).append("=").append(URLEncoder.encode(quizQuestion.getListValue()[integer], "utf-8")).append("&");
-                            }
-                        } catch (ArrayIndexOutOfBoundsException | UnsupportedEncodingException e) {
-                            throw new BuildAnswerException("MultiChoice URL Encode Error!");
-                        }
+            } catch (InputException e) {
+                throw new SolutionException("setValue Input Permutation or Combination Error!");
+            }
+            StringBuilder value = new StringBuilder();
+            int index = quizQuestion.getTestCount();
+            //nếu vượt quá index tổ hợp
+            if (index >= alInt.size()) {
+                throw new SolutionException("setValue ArrayIndexOutOfBound alInt!");
+            }
+            //nếu là text: định dạng key=value1,value2...
+            if (quizQuestion.getType().equals("text")) {
+                value.append(quizQuestion.getKey()).append("=");
+            }
+            alInt.forEach((alInteger) -> {
+                alInteger.forEach((integer) -> {
+                    if (quizQuestion.getType().equals("text")) {
+                        // kiểu text chỉ việc append value1,value2...
+                        value.append(Function.URLEncoder(quizQuestion.getListValue()[integer])).append("%2C");
+                    } else {
+                        // kiểu checkbox => key[]=value1&key[]=value2.....
+                        value.append(Function.URLEncoder(quizQuestion.getKey())).append("=").append(Function.URLEncoder(quizQuestion.getListValue()[integer])).append("&");
                     }
-                }
-            }
+                });
+            });
             //xóa kí tự nối cuối và return quizQuestion
-            try {
-                String sbStr = sb.toString();
-                int sbLen = sb.length();
-                sbStr = sbStr.substring(0, sbLen - (quizQuestion.getType().equals("text") ? 3 : 1));
-                return sbStr;
-            } catch (Exception e) {
-                throw new BuildAnswerException("delete the end hyphen Error!");
-            }
+            return makeUpValue(value.toString());
         } else { // đây là kiểu chọn 1 đáp án
             String choice[] = quizQuestion.getListValue();
-            try {
-                //định dạng: key=value
-                String res = URLEncoder.encode(quizQuestion.getName(), "utf-8") + "=" + URLEncoder.encode(choice[quizQuestion.getTestCount()], "utf-8") + "&";
-                return res.substring(0, res.length() - 1);
-            } catch (ArrayIndexOutOfBoundsException | UnsupportedEncodingException e) {
-                throw new BuildAnswerException("Choice URL Encode Error!");
-            }
+            //định dạng: key=value
+            String res = Function.URLEncoder(quizQuestion.getKey()) + "=" + Function.URLEncoder(choice[quizQuestion.getTestCount()]) + "&";
+            return makeUpValue(res);
         }
-    }
-
-    //thêm phần tử vào alInt, vị trí lẻ = đảo ngược vị trí giá trị của vị trí chẵn
-    public static ArrayList<ArrayList<Integer>> reverseAlInt(ArrayList<ArrayList<Integer>> alInt) {
-        ArrayList<ArrayList<Integer>> alIntTmp = new ArrayList<>();
-        for (ArrayList<Integer> a : alInt) {
-            alIntTmp.add(a);
-            alIntTmp.add(reverse(a));
-        }
-        return alIntTmp;
-    }
-
-    //hỗ trợ reverseAlInt, đảo 1 ArrayList<Integer>
-    public static ArrayList<Integer> reverse(ArrayList<Integer> alInt) {
-        ArrayList<Integer> alTmpInt = new ArrayList<>();
-        for (int i = alInt.size() - 1; i >= 0; i--) {
-            alTmpInt.add(alInt.get(i));
-        }
-        return alTmpInt;
     }
 
     //kiểm tra giá trị đầu vào và setCorrect lại cho mỗi quizQuestion
-    private static Quiz checkResult(String htmlResp, Quiz quiz) {
+    private static Quiz checkResultSolution(String htmlResp, Quiz quiz) throws SolutionException {
         htmlResp = Jsoup.parse(htmlResp).html();
         Document document = Jsoup.parse(htmlResp);
-        Elements span = document.select("span[class='sr']");
-        int i = 0;
-        for (Element e : span) {
-            String resHtml = e.html().trim().toLowerCase();
-            if (resHtml.equals("correct") || resHtml.equals("incorrect")) {
-                quiz.getQuizQuestion()[i++].setCorrect(resHtml.equals("correct"));
-            }
+        Elements elmsResult = document.select("span[class='sr']");
+        if (elmsResult.isEmpty()) {
+            throw new SolutionException("checkResultSolution span[class='sr'] is empty!");
         }
-//        htmlResp = Jsoup.parse(htmlResp).html();
-//        Pattern p = Pattern.compile("\"sr\">([correct]|[incorrect]){1}</");
-//        Matcher m = p.matcher(htmlResp);
-//        int i=0; 
-//        while(m.find()){
-//            String res = m.group().substring(5, m.group().length()-2).trim();
-//            if(res.equals("correct") || res.equals("incorrect")){
-//                quiz.getQuizQuestion()[i++].setCorrect(res.equals("correct"));
-//            }
-//        }
+        int i = 0;
+        for (Element elmResult : elmsResult) {
+            String resHtml = elmResult.text().trim().toLowerCase();
+            if (!resHtml.equals("correct") && !resHtml.equals("incorrect")) {
+                throw new SolutionException("checkResultSolution can't know result!");
+            }
+            quiz.getQuizQuestion()[i++].setCorrect(resHtml.equals("correct"));
+        }
         return quiz;
     }
 
-    //
-    private String parseUrlPost() {
-        return "https://cms.poly.edu.vn/courses/" + course.getId() + "/xblock/" + course.getId().replace("course", "block") + "+type@problem+block@" + parseHashKey(quiz.getQuizQuestion()[0].getName()) + "/handler/xmodule_handler/problem_check";
+    private static String makeUpValue(String value) {
+        int len = value.length();
+        if (value.toCharArray()[len - 1] == '&') {
+            return value.substring(0, len - 1);
+        }
+        if (value.indexOf("%2c") == len - 3) {
+            return value.substring(0, len - 3);
+        }
+        return value;
     }
 
     //
@@ -260,14 +232,18 @@ public class CMSSolution implements Runnable {
         return hashKey.split("_")[1];
     }
 
-    @Override
-    public void run() {
-        try {
-            solution();
-        } catch (ParseException ex) {
-            Function.debug("name=" + quiz.getName() + " => " + ex.toString());
-        } catch (IOException | EssayQuestionException | BuildAnswerException ex) {
-            Function.debug("name=" + quiz.getName() + " => " + ex.toString());
+    private static double totalMaxScore(Quiz quiz) {
+        //tổng số câu hỏi
+        int totalQuizQuestion = quiz.getQuizQuestion().length;
+        //tổng số câu hỏi bỏ qua
+        int quizQuestionEssay = 0;
+        for (QuizQuestion quizQuestion : quiz.getQuizQuestion()) {
+            if (quizQuestion.getListValue() == null) {
+                quizQuestionEssay++;
+            }
         }
+        //điểm 1 bài
+        double scoreOneQuestion = Function.roundReal(quiz.getScorePossible() / totalQuizQuestion, 3);
+        return Function.roundReal((totalQuizQuestion - quizQuestionEssay) * scoreOneQuestion, 3);
     }
 }

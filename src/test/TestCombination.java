@@ -6,6 +6,7 @@
 package test;
 
 import function.combination.Combination;
+import function.combination.Permutation;
 import function.combination.exception.InputException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,10 +17,12 @@ import java.util.Arrays;
  */
 public class TestCombination {
     public static void main(String[] args) throws InputException {
-        Combination combination = new Combination(5, 10, true);
-        combination.build();
-        ArrayList<ArrayList<Integer>> alInt = combination.getResult();
-        for(ArrayList<Integer> alIntt: alInt){
+        Permutation permutation = new Permutation(2, 4);
+        permutation.build();
+//        Combination combination = new Combination(3, 4);
+//        combination.build();
+    
+        for(ArrayList<Integer> alIntt: permutation.getResult()){
             for(int i: alIntt){
                 System.out.print(i+" ");
             }
