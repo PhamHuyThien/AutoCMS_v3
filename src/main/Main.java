@@ -4,8 +4,8 @@ import auto.login.CMSLogin;
 import frames.FormMain;
 import function.Function;
 import object.cms.CMSAccount;
-import user.course.Course;
-import user.course.quiz.Quiz;
+import object.course.Course;
+import object.course.quiz.Quiz;
 
 /**
  * @name AutoCMS v3.0.0 OB1

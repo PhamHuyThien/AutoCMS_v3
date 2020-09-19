@@ -1,9 +1,7 @@
 package auto.login;
 
 import auto.login.exception.LoginException;
-import function.Function;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
@@ -12,9 +10,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import user.course.Course;
 
 import object.cms.CMSAccount;
+import object.course.Course;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -73,19 +71,17 @@ public class CMSLogin {
         HttpRequest httpRequest = new HttpRequest(CMS_URL_DASBOARD, httpRequestHeader);
         String htmlResp = httpRequest.getResponseHTML();
         //
-        this.cmsAccount = buildCMSAccount(htmlResp);
+        Document document = Jsoup.parse(htmlResp);
+        //
+        this.cmsAccount = buildCMSAccount(document);
         this.cmsAccount.setCookie(cookie);
         this.cmsAccount.setCsrfToken(parseCRSFToken(cookie));
-        Function.debug("cmsAccount => " + cmsAccount.toString());
         //
-        this.course = buildCourse(htmlResp);
-        Function.debug("course[] => " + Arrays.toString(course));
+        this.course = buildCourse(document);
     }
 
     //get user từ htmlResp
-    private static CMSAccount buildCMSAccount(String htmlResp) throws LoginException {
-        //build document
-        Document document = Jsoup.parse(htmlResp);
+    private static CMSAccount buildCMSAccount(Document document) throws LoginException {
         //get element
         Element elmUserMetaData = document.selectFirst("script[id='user-metadata']");
         if (elmUserMetaData == null) {
@@ -103,8 +99,7 @@ public class CMSLogin {
     }
     //parse từ String htmlResp sang Array Course, 
 
-    private static Course[] buildCourse(String htmlResp) throws LoginException {
-        Document document = Jsoup.parse(htmlResp);
+    private static Course[] buildCourse(Document document) throws LoginException {
         Elements elmsLeanModal = document.select("a[rel='leanModal']");
         if (elmsLeanModal.isEmpty()) {
             throw new LoginException("buildCourse a[rel='leanModal'] is empty!");

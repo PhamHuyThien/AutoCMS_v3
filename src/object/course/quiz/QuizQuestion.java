@@ -1,5 +1,4 @@
-
-package user.course.quiz;
+package object.course.quiz;
 
 import java.util.Arrays;
 
@@ -14,23 +13,27 @@ import java.util.Arrays;
 public class QuizQuestion {
     private String name;
     private String type;
+    private String question;
+    private String key;
+    private String[] listValue;
     private boolean multiChoice;
-    private String[] choice;
-    private int test;
+    private String selectValue;
+    private int testCount;
     private boolean correct;
-    private String answer;
 
     public QuizQuestion() {
     }
 
-    public QuizQuestion(String name, String type, boolean multiChoice, String[] choice, int test, boolean correct, String answer) {
+    public QuizQuestion(String name, String type, String question, String key, String[] listValue, boolean multiChoice, String selectValue, int testCount, boolean correct) {
         this.name = name;
         this.type = type;
+        this.question = question;
+        this.key = key;
+        this.listValue = listValue;
         this.multiChoice = multiChoice;
-        this.choice = choice;
-        this.test = test;
+        this.selectValue = selectValue;
+        this.testCount = testCount;
         this.correct = correct;
-        this.answer = answer;
     }
 
     public String getName() {
@@ -49,6 +52,30 @@ public class QuizQuestion {
         this.type = type;
     }
 
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String[] getListValue() {
+        return listValue;
+    }
+
+    public void setListValue(String[] listValue) {
+        this.listValue = listValue;
+    }
+
     public boolean isMultiChoice() {
         return multiChoice;
     }
@@ -57,20 +84,20 @@ public class QuizQuestion {
         this.multiChoice = multiChoice;
     }
 
-    public String[] getChoice() {
-        return choice;
+    public String getSelectValue() {
+        return selectValue;
     }
 
-    public void setChoice(String[] choice) {
-        this.choice = choice;
+    public void setSelectValue(String selectValue) {
+        this.selectValue = selectValue;
     }
 
-    public int getTest() {
-        return test;
+    public int getTestCount() {
+        return testCount;
     }
 
-    public void setTest(int test) {
-        this.test = test;
+    public void setTestCount(int testCount) {
+        this.testCount = testCount;
     }
 
     public boolean isCorrect() {
@@ -81,17 +108,11 @@ public class QuizQuestion {
         this.correct = correct;
     }
 
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
     @Override
     public String toString() {
-        return "QuizQuestion{" + "name=" + name + ", type=" + type + ", multiChoice=" + multiChoice + ", choice=" + Arrays.toString(choice) + ", test=" + test + ", correct=" + correct + ", answer=" + answer + '}';
+        return "QuizQuestion{" + "name=" + name + ", type=" + type + ", question=" + question + ", key=" + key + ", listValue=" + Arrays.toString(listValue) + ", multiChoice=" + multiChoice + ", selectValue=" + selectValue + ", testCount=" + testCount + ", correct=" + correct + '}';
     }
 
+
+ 
 }

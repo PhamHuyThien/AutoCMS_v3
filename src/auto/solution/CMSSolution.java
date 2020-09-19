@@ -18,12 +18,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import object.cms.CMSAccount;
+import object.course.Course;
+import object.course.quiz.Quiz;
+import object.course.quiz.QuizQuestion;
 import org.json.simple.parser.ParseException;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
-import user.course.Course;
-import user.course.quiz.Quiz;
-import user.course.quiz.QuizQuestion;
 
 /**
  * @name AutoCMS v3.0.0 OB1
@@ -140,9 +140,9 @@ public class CMSSolution implements Runnable {
             }
             sb.append(ans).append("&");
             if (!quizQuestion[i].isCorrect()) { //hoàn thành rồi thì bỏ qua tăng test
-                quiz.getQuizQuestion()[i].setTest(quiz.getQuizQuestion()[i].getTest() + 1);
+                quiz.getQuizQuestion()[i].setTestCount(quiz.getQuizQuestion()[i].getTestCount()+ 1);
             }
-            quiz.getQuizQuestion()[i].setAnswer(ans); // set đáp án
+            quiz.getQuizQuestion()[i].setSelectValue(ans); // set đáp án
         }
         return sb.toString().substring(0, sb.length() - 1);
     }
@@ -152,11 +152,11 @@ public class CMSSolution implements Runnable {
 
         //đã hoàn thành thì chỉ lấy getAnswer()
         if (quizQuestion.isCorrect()) {
-            return quizQuestion.getAnswer();
+            return quizQuestion.getSelectValue();
         } else if (quizQuestion.isMultiChoice()) { // đây là kiểu multichoice
             //tạo mới biến global alInt chứa danh sách tổ hợp chập k của n phần tử
             try {
-                alInt = new Combination(2, quizQuestion.getChoice().length, true).getResult();
+                alInt = new Combination(2, quizQuestion.getListValue().length, true).getResult();
             } catch (InputException e) {
                 throw new BuildAnswerException("setChoice => Input Combination Error!");
             }
@@ -165,7 +165,7 @@ public class CMSSolution implements Runnable {
                 this.alInt = reverseAlInt(this.alInt);
             }
             StringBuilder sb = new StringBuilder();
-            int index = quizQuestion.getTest();
+            int index = quizQuestion.getTestCount();
             if (index < alInt.size()) {  //nếu có getTest có trong tổ hợp
                 //nếu là text: định dạng key=value1,value2...
                 if (quizQuestion.getType().equals("text")) {
@@ -175,9 +175,9 @@ public class CMSSolution implements Runnable {
                     for (Integer integer : alInteger) {
                         try {
                             if (quizQuestion.getType().equals("text")) { // kiểu text chỉ việc append value1,value2...
-                                sb.append(URLEncoder.encode(quizQuestion.getChoice()[integer], "utf-8")).append("%2C");
+                                sb.append(URLEncoder.encode(quizQuestion.getListValue()[integer], "utf-8")).append("%2C");
                             } else { // kiểu checkbox => key[]=value1&key[]=value2.....
-                                sb.append(URLEncoder.encode(quizQuestion.getName(), "utf-8")).append("=").append(URLEncoder.encode(quizQuestion.getChoice()[integer], "utf-8")).append("&");
+                                sb.append(URLEncoder.encode(quizQuestion.getName(), "utf-8")).append("=").append(URLEncoder.encode(quizQuestion.getListValue()[integer], "utf-8")).append("&");
                             }
                         } catch (ArrayIndexOutOfBoundsException | UnsupportedEncodingException e) {
                             throw new BuildAnswerException("MultiChoice URL Encode Error!");
@@ -195,10 +195,10 @@ public class CMSSolution implements Runnable {
                 throw new BuildAnswerException("delete the end hyphen Error!");
             }
         } else { // đây là kiểu chọn 1 đáp án
-            String choice[] = quizQuestion.getChoice();
+            String choice[] = quizQuestion.getListValue();
             try {
                 //định dạng: key=value
-                String res = URLEncoder.encode(quizQuestion.getName(), "utf-8") + "=" + URLEncoder.encode(choice[quizQuestion.getTest()], "utf-8") + "&";
+                String res = URLEncoder.encode(quizQuestion.getName(), "utf-8") + "=" + URLEncoder.encode(choice[quizQuestion.getTestCount()], "utf-8") + "&";
                 return res.substring(0, res.length() - 1);
             } catch (ArrayIndexOutOfBoundsException | UnsupportedEncodingException e) {
                 throw new BuildAnswerException("Choice URL Encode Error!");

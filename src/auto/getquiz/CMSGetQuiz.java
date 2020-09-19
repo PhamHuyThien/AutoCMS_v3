@@ -10,15 +10,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import object.cms.CMSAccount;
+import object.course.Course;
+import object.course.quiz.Quiz;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
-
-import user.course.Course;
-import user.course.quiz.Quiz;
 
 /**
  * @name AutoCMS v3.0.0 OB1
@@ -98,12 +97,12 @@ public class CMSGetQuiz {
         //
         Document document = Jsoup.parse(htmlResp);
         Elements elmsUrlQuizRaw = document.select("a[class='outline-item focusable']");
-        if(elmsUrlQuizRaw.isEmpty()){
+        if (elmsUrlQuizRaw.isEmpty()) {
             throw new BuildQuizException("getURLQuizRaw a[class='outline-item focusable'] is Empty!");
         }
         String[] res = new String[elmsUrlQuizRaw.size()];
         int i = 0;
-        for (Element elmUrlQUizRaw: elmsUrlQuizRaw) {
+        for (Element elmUrlQUizRaw : elmsUrlQuizRaw) {
             res[i++] = elmUrlQUizRaw.attr("href");
         }
         return res;
@@ -122,22 +121,19 @@ public class CMSGetQuiz {
                 TimeUnit.SECONDS,
                 arrayBlockingQueue // Blocking queue để cho request đợi
         );
-
+        //execute
         for (String urlQuiz : allLinkUrlQuiz) {
-            CheckUrlQuiz checkUrlQuiz = new CheckUrlQuiz();
-            checkUrlQuiz.setCmsAccount(cmsAccount);
-            checkUrlQuiz.setUrl(urlQuiz);
-            checkUrlQuiz.setCmsQuizGet(this);
+            BuildQuizThreadPool checkUrlQuiz = new BuildQuizThreadPool(cmsAccount, urlQuiz, this);
             threadPoolExecutor.execute(checkUrlQuiz);
             Function.sleep(100);
         }
-
+        //shutdown
         threadPoolExecutor.shutdown();
+        //waiting
         while (threadPoolExecutor.isTerminating()) {
             Function.sleep(100);
         }
     }
-    //sắp xếp các quiz theo thứ tự từ quiz 1 => quiz N
 
     private static Quiz[] sortQuiz(HashSet<Quiz> hsQuiz) {
 
@@ -152,22 +148,22 @@ public class CMSGetQuiz {
 //        };
         List<Quiz> listQuiz = new ArrayList<>(hsQuiz);
 //        Collections.sort(listQuiz, comparator);
-        
+
         List<Quiz> listQuizTmp = new ArrayList<>();
-        for(int i=0; i<listQuiz.size(); i++){
+        for (int i = 0; i < listQuiz.size(); i++) {
             int k = -1;
-            for(int j=0; j<listQuizTmp.size(); j++){
-                if(listQuiz.get(i).getName().equals(listQuizTmp.get(j).getName())){
+            for (int j = 0; j < listQuizTmp.size(); j++) {
+                if (listQuiz.get(i).getName().equals(listQuizTmp.get(j).getName())) {
                     k = j;
                     break;
                 }
             }
-            if(k==-1){
+            if (k == -1) {
                 listQuizTmp.add(listQuiz.get(i));
             }
         }
         listQuiz = listQuizTmp;
-        
+
         Quiz quiz[] = new Quiz[listQuiz.size()];
         for (int i = 0; i < listQuiz.size(); i++) {
             quiz[i] = listQuiz.get(i);

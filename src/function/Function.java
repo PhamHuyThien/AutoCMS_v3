@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
+import java.text.Normalizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -19,6 +21,17 @@ import javax.net.ssl.X509TrustManager;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Function {
+
+    //parse value type text để send request
+    public static String convertVIToEN(String str) {
+        try {
+            String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
+            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+            return pattern.matcher(temp).replaceAll("").toLowerCase().replaceAll(" ", "-").replaceAll("đ", "d");
+        } catch (Exception ex) {
+        }
+        return "";
+    }
 
     public static void debug(String content) {
         System.out.println(content);
@@ -72,14 +85,14 @@ public class Function {
             }
         }
     }
-    
-    public static void sleep(long sleep){
+
+    public static void sleep(long sleep) {
         try {
             Thread.sleep(sleep);
         } catch (InterruptedException ex) {
         }
     }
-    
+
     public static void shell(String... shell) throws IOException {
         if (getOSName().toLowerCase().startsWith("windows")) {
             ProcessBuilder builder = new ProcessBuilder();

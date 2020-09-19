@@ -1,5 +1,5 @@
 
-package user.course;
+package object.course;
 
 /**
  * @name AutoCMS v3.0.0 OB1

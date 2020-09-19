@@ -1,6 +1,7 @@
 package frames;
 
 import auto.getquiz.CMSGetQuiz;
+import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
@@ -9,12 +10,13 @@ import auto.solution.exception.EssayQuestionException;
 import main.Main;
 import function.Function;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import object.course.Course;
+import object.course.quiz.Quiz;
 import org.json.simple.parser.ParseException;
-import user.course.Course;
-import user.course.quiz.Quiz;
 
 /**
  * @name AutoCMS v3.0.0 OB1
@@ -308,6 +310,8 @@ public class FormMain extends javax.swing.JFrame {
                 cbbQuiz.setEnabled(false);
                 btnSolution.setEnabled(false);
                 showProcess("Đăng nhập thành công!");
+                Function.debug(Main.cmsAccount.toString());
+                Function.debug(Arrays.toString(Main.course));
             } else {
                 alertWar("Bạn phải nhập Cookie!");
             }
@@ -388,20 +392,23 @@ public class FormMain extends javax.swing.JFrame {
                 btnLogin.setEnabled(true);
                 cbbCourse.setEnabled(true);
                 return;
+            } catch (BuildQuizException ex) {
+                Logger.getLogger(FormMain.class.getName()).log(Level.SEVERE, null, ex);
             }
             showProcess("Tìm thành công " + cmsQuizGet.getQuiz().length + " Quiz!");
             cbbQuiz.removeAllItems();
             cbbQuiz.addItem("Select Quiz...");
-            Function.debug("");
             for (Quiz quiz : cmsQuizGet.getQuiz()) {
-                Function.debug(quiz.toString());
                 cbbQuiz.addItem(quiz.getName());
             }
             cbbQuiz.addItem("Auto " + cmsQuizGet.getQuiz().length + " quiz");
             cbbQuiz.setSelectedIndex(cbbQuiz.getItemCount() - 1);
 
             Main.quiz = cmsQuizGet.getQuiz();
-
+            Function.debug("");
+            for(Quiz q: Main.quiz){
+                Function.debug(q.toString());
+            }
             inpSetEnbled(true);
         }).start();
 
