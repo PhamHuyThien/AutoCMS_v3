@@ -1,18 +1,19 @@
 package auto.getquiz;
 
+import auto.getquiz.Exception.BuildQuizException;
 import function.Function;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import object.cms.CMSAccount;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -26,7 +27,7 @@ import user.course.quiz.Quiz;
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com
  */
-public class CMSQuizGet {
+public class CMSGetQuiz {
 
     private CMSAccount cmsAccount;
     private Course course;
@@ -40,7 +41,7 @@ public class CMSQuizGet {
     private boolean useRaw;
     private boolean useStandard;
 
-    public CMSQuizGet() {
+    public CMSGetQuiz() {
     }
 
     public CMSAccount getCmsAccount() {
@@ -67,62 +68,48 @@ public class CMSQuizGet {
         return quiz;
     }
 
-    public void getRaw() throws IOException {
+    public void getRaw() throws IOException, BuildQuizException {
         if (useRaw) {
             return;
         }
         useRaw = !useRaw;
-        allLinkQuizRaw = getAllLinkQuiz(cmsAccount, course);
+        allLinkQuizRaw = getURLQuizRaw(cmsAccount, course);
     }
 
-    public void getStandard() throws IOException {
+    public void getStandard() throws IOException, BuildQuizException {
         if (useStandard) {
             return;
         }
         useStandard = !useStandard;
         getRaw();
         hashsetQuiz = new HashSet<>();
-        fillerAllLinkQuiz(allLinkQuizRaw);
+        getUrlQuizStandard(allLinkQuizRaw);
         this.quiz = sortQuiz(hashsetQuiz);
     }
 
     // lấy tất cả link quiz 
-    public static String[] getAllLinkQuiz(CMSAccount cmsAccount, Course course) throws IOException {
-
-        final String CMS_ALL_COURSE = "https://cms.poly.edu.vn/courses/" + course.getId() + "/course";
+    public static String[] getURLQuizRaw(CMSAccount cmsAccount, Course course) throws IOException, BuildQuizException {
+        final String CMS_QUIZ_ALL_LINK = "https://cms.poly.edu.vn/courses/" + course.getId() + "/course";
 
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("cookie", cmsAccount.getCookie());
-        HttpRequest httpRequest = new HttpRequest(CMS_ALL_COURSE, httpRequestHeader);
-
-        return parseURLQuiz(httpRequest.getResponseHTML());
-
-    }
-
-    //lấy danh sách tất cả các URLQuiz
-    private static String[] parseURLQuiz(String htmlRespGetAllQuiz) {
-
-        ArrayList<String> resAl = new ArrayList<>();
-
-        String regex = "href=\"https://cms(.+?)\"";
-
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(htmlRespGetAllQuiz);
-
-        while (m.find()) {
-            int indexStart = m.group().indexOf("\"");
-            int indexEnd = m.group().lastIndexOf("\"");
-            resAl.add(m.group().substring(indexStart + 1, indexEnd));
+        HttpRequest httpRequest = new HttpRequest(CMS_QUIZ_ALL_LINK, httpRequestHeader);
+        String htmlResp = httpRequest.getResponseHTML();
+        //
+        Document document = Jsoup.parse(htmlResp);
+        Elements elmsUrlQuizRaw = document.select("a[class='outline-item focusable']");
+        if(elmsUrlQuizRaw.isEmpty()){
+            throw new BuildQuizException("getURLQuizRaw a[class='outline-item focusable'] is Empty!");
         }
-        String[] res = new String[resAl.size()];
+        String[] res = new String[elmsUrlQuizRaw.size()];
         int i = 0;
-        for (String s : resAl) {
-            res[i++] = s;
+        for (Element elmUrlQUizRaw: elmsUrlQuizRaw) {
+            res[i++] = elmUrlQUizRaw.attr("href");
         }
         return res;
     }
 
-    private void fillerAllLinkQuiz(String[] allLinkUrlQuiz) {
+    private void getUrlQuizStandard(String[] allLinkUrlQuiz) {
 
         int corePoolSize = allLinkUrlQuiz.length;
         int maximumPoolSize = allLinkUrlQuiz.length;
@@ -186,16 +173,6 @@ public class CMSQuizGet {
             quiz[i] = listQuiz.get(i);
         }
         return quiz;
-    }
-
-    //so sánh tên của quiz với array, trùng thì true
-    private static boolean compareQuiz(Quiz quiz, ArrayList<Quiz> alQuiz) {
-        for (Quiz q : alQuiz) {
-            if (q.getName().equals(quiz.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

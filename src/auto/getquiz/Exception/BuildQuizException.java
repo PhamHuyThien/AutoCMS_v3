@@ -9,9 +9,9 @@ package auto.getquiz.Exception;
  *
  * @author Administrator
  */
-public class GetDataContentError extends Exception {
+public class BuildQuizException extends Exception {
 
-    public GetDataContentError(String content) {
+    public BuildQuizException(String content) {
         super(content);
     }
 }

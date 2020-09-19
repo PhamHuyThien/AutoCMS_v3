@@ -15,7 +15,6 @@ import org.jsoup.select.Elements;
 import user.course.Course;
 
 import object.cms.CMSAccount;
-import org.json.simple.parser.ParseException;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -87,9 +86,6 @@ public class CMSLogin {
     private static CMSAccount buildCMSAccount(String htmlResp) throws LoginException {
         //build document
         Document document = Jsoup.parse(htmlResp);
-        if (document == null) {
-            throw new LoginException("buildCMSAccount parse document error!");
-        }
         //get element
         Element elmUserMetaData = document.selectFirst("script[id='user-metadata']");
         if (elmUserMetaData == null) {

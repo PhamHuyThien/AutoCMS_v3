@@ -29,12 +29,12 @@ public class CheckUrlQuiz implements Runnable {
 
     private CMSAccount cmsAccount;
     private String url;
-    private CMSQuizGet cmsQuizGet;
+    private CMSGetQuiz cmsQuizGet;
 
     public CheckUrlQuiz() {
     }
 
-    public CheckUrlQuiz(CMSAccount cmsAccount, String url, CMSQuizGet cmsQuizGet) {
+    public CheckUrlQuiz(CMSAccount cmsAccount, String url, CMSGetQuiz cmsQuizGet) {
         this.cmsAccount = cmsAccount;
         this.url = url;
         this.cmsQuizGet = cmsQuizGet;
@@ -56,11 +56,11 @@ public class CheckUrlQuiz implements Runnable {
         this.url = url;
     }
 
-    public CMSQuizGet getCmsQuizGet() {
+    public CMSGetQuiz getCmsQuizGet() {
         return cmsQuizGet;
     }
 
-    public void setCmsQuizGet(CMSQuizGet cmsQuizGet) {
+    public void setCmsQuizGet(CMSGetQuiz cmsQuizGet) {
         this.cmsQuizGet = cmsQuizGet;
     }
 

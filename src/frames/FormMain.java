@@ -1,6 +1,6 @@
 package frames;
 
-import auto.getquiz.CMSQuizGet;
+import auto.getquiz.CMSGetQuiz;
 import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
@@ -373,7 +373,7 @@ public class FormMain extends javax.swing.JFrame {
         }
         inpSetEnbled(false);
         new Thread(() -> {
-            CMSQuizGet cmsQuizGet = new CMSQuizGet();
+            CMSGetQuiz cmsQuizGet = new CMSGetQuiz();
             cmsQuizGet.setCmsAccount(Main.cmsAccount);
             cmsQuizGet.setCourse(Main.course[id - 1]);
 
