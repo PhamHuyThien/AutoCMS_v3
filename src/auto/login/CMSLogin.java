@@ -1,9 +1,6 @@
 package auto.login;
 
-import auto.login.exception.CookieNullException;
-import auto.login.exception.CourseIsEmpty;
-import auto.login.exception.JsonInfoCMSUserNotFound;
-import auto.login.exception.ParseCRSFTokenError;
+import auto.login.exception.LoginException;
 import function.Function;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,8 +36,7 @@ public class CMSLogin {
     private final String CMS_URL_DASBOARD = "https://cms.poly.edu.vn/dashboard/";
 
     private boolean isLogin;
-    private boolean done;
-    
+
     public CMSLogin() {
     }
 
@@ -57,92 +53,81 @@ public class CMSLogin {
     }
 
     //getter
-
     public CMSAccount getCmsAccount() {
         return cmsAccount;
     }
-
 
     public Course[] getCourse() {
         return course;
     }
 
-    public boolean isDone() {
-        return done;
-    }
-
-    public void login() throws CookieNullException, IOException, ParseException, JsonInfoCMSUserNotFound, ParseCRSFTokenError, CourseIsEmpty {
-        if(isLogin){
+    public void login() throws IOException, LoginException {
+        if (isLogin) {
             return;
         }
         isLogin = !isLogin;
-        
         if (cookie == null) {
-            throw new CookieNullException("Cookie null? CMSLogin(String cookie); setCookie(String cookie); !");
+            throw new LoginException("Login cookie is NULL!");
         }
-        
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("cookie", cookie);
-        HttpRequest httpRequest = new HttpRequest(
-                CMS_URL_DASBOARD,
-                httpRequestHeader
-        );
-        httpRequest.connect();
-        //get được user và course
+        HttpRequest httpRequest = new HttpRequest(CMS_URL_DASBOARD, httpRequestHeader);
         String htmlResp = httpRequest.getResponseHTML();
-        this.cmsAccount = buildCMSAccount(this.cookie, htmlResp);
-        Function.debug("cmsAccount => "+cmsAccount.toString());
+        //
+        this.cmsAccount = buildCMSAccount(htmlResp);
+        this.cmsAccount.setCookie(cookie);
+        this.cmsAccount.setCsrfToken(parseCRSFToken(cookie));
+        Function.debug("cmsAccount => " + cmsAccount.toString());
+        //
         this.course = buildCourse(htmlResp);
-        Function.debug("course[] => "+Arrays.toString(course));
-        done = !done;
+        Function.debug("course[] => " + Arrays.toString(course));
     }
 
     //get user từ htmlResp
-    private static CMSAccount buildCMSAccount(String cookie, String htmlResp) throws ParseException, JsonInfoCMSUserNotFound, ParseCRSFTokenError {
-        
-        Pattern pattern = Pattern.compile("(\\{\"(.+?)\"\\})");
-        Matcher matcher = pattern.matcher(htmlResp);
-
-        if (matcher.find()) {
-            
-            String sJson = matcher.group().replaceAll("\\s", "");
-            Object jObj = JSONValue.parseWithException(sJson);
-            JSONObject jsonObj = (JSONObject) jObj;
-            
-            CMSAccount cmsAccount = new CMSAccount();
-            cmsAccount.setCookie(cookie);
-            cmsAccount.setCsrfToken(parseCRSFToken(cookie));
-            cmsAccount.setUserName(jsonObj.get("username").toString());
-            cmsAccount.setUserId(String.valueOf(jsonObj.get("user_id")));
-            return cmsAccount;
-
+    private static CMSAccount buildCMSAccount(String htmlResp) throws LoginException {
+        //build document
+        Document document = Jsoup.parse(htmlResp);
+        if (document == null) {
+            throw new LoginException("buildCMSAccount parse document error!");
         }
-        throw new JsonInfoCMSUserNotFound("find JSON CMS User Error!");
+        //get element
+        Element elmUserMetaData = document.selectFirst("script[id='user-metadata']");
+        if (elmUserMetaData == null) {
+            throw new LoginException("buildCMSAccount script[id='user-metadata'] is NULL!");
+        }
+        //parse JSON
+        Object jObj = JSONValue.parse(elmUserMetaData.html());
+        JSONObject jsonObj = (JSONObject) jObj;
+        //build CMSAccount
+        CMSAccount cmsAccount = new CMSAccount();
+        cmsAccount.setUserName(jsonObj.get("username").toString());
+        cmsAccount.setUserId(String.valueOf(jsonObj.get("user_id")));
+        return cmsAccount;
+
     }
     //parse từ String htmlResp sang Array Course, 
 
-    private static Course[] buildCourse(String htmlResp) throws CourseIsEmpty {
+    private static Course[] buildCourse(String htmlResp) throws LoginException {
         Document document = Jsoup.parse(htmlResp);
-        Elements aTag = document.select("a[rel='leanModal']");
-        if (aTag.size() > 0) {
-            Course[] course = new Course[aTag.size()];
-            int i = 0;
-            for (Element e : aTag) {
-                course[i] = new Course();
-                course[i].setName(e.attr("data-course-name"));
-                course[i].setId(e.attr("data-course-id"));
-                course[i].setIndex(e.attr("data-dashboard-index"));
-                course[i].setNumber(e.attr("data-course-number"));
-                course[i].setRefurnUrl(e.attr("data-course-refund-url"));
-                i++;
-            }
-            return course;
+        Elements elmsLeanModal = document.select("a[rel='leanModal']");
+        if (elmsLeanModal.isEmpty()) {
+            throw new LoginException("buildCourse a[rel='leanModal'] is empty!");
         }
-        throw new CourseIsEmpty("rel='learnModal' is Empty!");
+        Course[] course = new Course[elmsLeanModal.size()];
+        int i = 0;
+        for (Element elmLean : elmsLeanModal) {
+            course[i] = new Course();
+            course[i].setName(elmLean.attr("data-course-name"));
+            course[i].setId(elmLean.attr("data-course-id"));
+            course[i].setIndex(elmLean.attr("data-dashboard-index"));
+            course[i].setNumber(elmLean.attr("data-course-number"));
+            course[i++].setRefurnUrl(elmLean.attr("data-course-refund-url"));
+        }
+        return course;
     }
 
     //lấy crsf từ cookie
-    private static String parseCRSFToken(String cookie) throws ParseCRSFTokenError {
+    private static String parseCRSFToken(String cookie) throws LoginException {
         String regex = "csrftoken=(.+?);";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(cookie);
@@ -151,7 +136,7 @@ public class CMSLogin {
             int indexEnd = matcher.group().indexOf(";");
             return matcher.group().substring(indexStart + 1, indexEnd);
         }
-        throw new ParseCRSFTokenError("CRSFToken from cookie is null!");
+        throw new LoginException("CRSFToken from cookie is null!");
     }
 
 }

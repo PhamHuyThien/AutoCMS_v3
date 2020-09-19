@@ -3,10 +3,7 @@ package frames;
 import auto.getquiz.CMSQuizGet;
 import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
-import auto.login.exception.CookieNullException;
-import auto.login.exception.CourseIsEmpty;
-import auto.login.exception.JsonInfoCMSUserNotFound;
-import auto.login.exception.ParseCRSFTokenError;
+import auto.login.exception.LoginException;
 import auto.solution.exception.BuildAnswerException;
 import auto.solution.exception.EssayQuestionException;
 import main.Main;
@@ -282,55 +279,35 @@ public class FormMain extends javax.swing.JFrame {
         new Thread(() -> {
             String cookie = tfCookie.getText();
             if (!cookie.equals("")) {
-
                 showProcess("Đang đăng nhập...");
-
                 inpSetEnbled(false);
-
                 Main.cmsLogin = new CMSLogin(cookie);
                 try {
                     Main.cmsLogin.login();
-                } catch (CookieNullException ex) {
-                    showProcess("Cookie phải khác null!");
+                } catch (LoginException ex) {
+                    showProcess("Đăng nhập không thành công!");
+                    tfCookie.setEnabled(true);
+                    btnLogin.setEnabled(true);
                 } catch (IOException ex) {
-                    showProcess("Kết nối thất bại!");
-                    System.out.println(ex.toString());
-                } catch (ParseException ex) {
-                    showProcess("parse JSON Error!");
-                } catch (JsonInfoCMSUserNotFound ex) {
-                    showProcess("Đọc dữ liệu thất bại!");
-                } catch (ParseCRSFTokenError ex) {
-                    showProcess("Đọc CRSF từ cookie thất bại!");
-                } catch (CourseIsEmpty ex) {
-                    showProcess("Không thấy khóa học nào để auto!");
-                }
-                if (Main.cmsLogin.isDone()) {
-
-                    Main.cmsAccount = Main.cmsLogin.getCmsAccount();
-                    Main.course = Main.cmsLogin.getCourse();
-
-                    lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
-                    lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
-
-                    cbbCourse.removeAllItems();
-                    cbbCourse.addItem("Select Course...");
-                    for (Course course : Main.course) {
-                        cbbCourse.addItem(course.getNumber());
-                    }
-
+                    showProcess("Kết nối đăng nhập không thành công!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
-                    cbbCourse.setEnabled(true);
-                    cbbQuiz.setEnabled(false);
-                    btnSolution.setEnabled(false);
-
-                    showProcess("Đăng nhập thành công!");
-                } else {
-                    tfCookie.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    tfCookie.setText("");
-                    alertErr("Cookie sai hoặc đã hết hạn!");
                 }
+
+                Main.cmsAccount = Main.cmsLogin.getCmsAccount();
+                Main.course = Main.cmsLogin.getCourse();
+                lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
+                lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
+                cbbCourse.removeAllItems();
+                cbbCourse.addItem("Select Course...");
+                for (Course course : Main.course) {
+                    cbbCourse.addItem(course.getNumber());
+                }
+
+                inpSetEnbled(true);
+                cbbQuiz.setEnabled(false);
+                btnSolution.setEnabled(false);
+                showProcess("Đăng nhập thành công!");
             } else {
                 alertWar("Bạn phải nhập Cookie!");
             }

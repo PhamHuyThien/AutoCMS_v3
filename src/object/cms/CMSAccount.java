@@ -60,7 +60,7 @@ public class CMSAccount{
     }
 
     public String getEmail() {
-        return email+"@fpt.edu.vn";
+        return userName+"@fpt.edu.vn";
     }
 
     public void setEmail(String email) {

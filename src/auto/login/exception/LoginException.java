@@ -9,8 +9,9 @@ package auto.login.exception;
  *
  * @author Administrator
  */
-public class CookieNullException extends Exception {
-    public CookieNullException(String content){
+public class LoginException extends Exception {
+
+    public LoginException(String content) {
         super(content);
     }
 }
