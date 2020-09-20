@@ -9,6 +9,7 @@ import java.security.cert.X509Certificate;
 import java.text.Normalizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -23,6 +24,31 @@ import javax.net.ssl.X509TrustManager;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Function {
+
+    public static String time(int second) {
+        String result = "";
+        int numberOfMinutes;
+        int numberOfSeconds;
+        numberOfMinutes = ((second % 86400) % 3600) / 60;
+        numberOfSeconds = ((second % 86400) % 3600) % 60;
+        if (numberOfMinutes > 0) {
+            result += numberOfMinutes + " minute ";
+        }
+        if (numberOfSeconds > 0) {
+            result += numberOfSeconds + " second";
+        }
+        return result;
+    }
+
+    public static int getInt(String content) {
+        String regex = "([0-9]+?)";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(content);
+        if (m.find()) {
+            return Integer.parseInt(m.group());
+        }
+        return -1;
+    }
 
     public static double roundReal(double d, int index) {
         return Double.parseDouble(String.format("%." + index + "g%n", d));

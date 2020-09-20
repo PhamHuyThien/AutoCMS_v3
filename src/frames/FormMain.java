@@ -5,6 +5,7 @@ import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
+import auto.solution.exception.SolutionException;
 import main.Main;
 import function.Function;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import object.course.Course;
 import object.course.quiz.Quiz;
-import org.json.simple.parser.ParseException;
 
 /**
  * @name AutoCMS v3.0.0 OB1
@@ -26,9 +26,9 @@ import org.json.simple.parser.ParseException;
 public class FormMain extends javax.swing.JFrame {
 
     private int i;
-    private int done;
-    private int err;
     private int index;
+    private CMSSolution cmsSolution[];
+    private int finish;
 
     public FormMain() {
         initComponents();
@@ -57,20 +57,20 @@ public class FormMain extends javax.swing.JFrame {
         btnContact = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("AUTO CMS V3.1.0  - 10 Quiz 10 Điểm Easy!");
+        setTitle("AUTO CMS V3.2.1  - 10 Quiz 10 Điểm Easy!");
         setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Consolas", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 204, 204));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("FPL@utoCMS");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 51, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Version V3.1.0 - 10 Quiz 10 Point Easy!");
+        jLabel2.setText("Version V3.2.1 - 10 Quiz 10 Point Easy!");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -91,7 +91,7 @@ public class FormMain extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(54, 54, 54)
                 .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
@@ -99,9 +99,11 @@ public class FormMain extends javax.swing.JFrame {
                     .addContainerGap(34, Short.MAX_VALUE)))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Login with cookie:"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Login with cookie:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Consolas", 0, 11))); // NOI18N
 
-        btnLogin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tfCookie.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+
+        btnLogin.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,15 +134,15 @@ public class FormMain extends javax.swing.JFrame {
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnLogin, tfCookie});
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Solution:"));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Solution:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Consolas", 0, 11))); // NOI18N
 
-        lbHello.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lbHello.setText("Hello: ......................................");
+        lbHello.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+        lbHello.setText("Hello:...............");
 
-        lbUserId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lbUserId.setText("User ID: ..................................");
+        lbUserId.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+        lbUserId.setText("User ID: ............");
 
-        cbbCourse.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbCourse.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         cbbCourse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Course..." }));
         cbbCourse.setEnabled(false);
         cbbCourse.addActionListener(new java.awt.event.ActionListener() {
@@ -149,7 +151,7 @@ public class FormMain extends javax.swing.JFrame {
             }
         });
 
-        btnSolution.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btnSolution.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         btnSolution.setText("Auto Solution");
         btnSolution.setEnabled(false);
         btnSolution.addActionListener(new java.awt.event.ActionListener() {
@@ -158,12 +160,12 @@ public class FormMain extends javax.swing.JFrame {
             }
         });
 
-        lbProcess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lbProcess.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         lbProcess.setForeground(new java.awt.Color(0, 153, 0));
-        lbProcess.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        lbProcess.setText("Processing...............................");
+        lbProcess.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbProcess.setText("<html><center>.....................................<br>ThienDepZaii is the Best!<br>.....................................<html>");
 
-        cbbQuiz.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbQuiz.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         cbbQuiz.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Quiz..." }));
         cbbQuiz.setEnabled(false);
 
@@ -175,14 +177,17 @@ public class FormMain extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbHello, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbUserId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbProcess, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbUserId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnSolution, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbbQuiz, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cbbCourse, 0, 154, Short.MAX_VALUE))
                 .addContainerGap())
+            .addComponent(lbProcess)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(132, 132, 132)
+                .addComponent(btnSolution, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,22 +200,22 @@ public class FormMain extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbUserId)
                     .addComponent(cbbQuiz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSolution)
-                    .addComponent(lbProcess, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(lbProcess, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnSolution)
+                .addContainerGap())
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSolution, cbbCourse, cbbQuiz, lbHello, lbUserId});
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Contact:"));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contact:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Consolas", 0, 11))); // NOI18N
 
-        lbInfo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lbInfo.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         lbInfo.setForeground(new java.awt.Color(255, 0, 0));
-        lbInfo.setText("AutoCMS V3.1.0  - Code By ThienDepZaii - SystemError");
+        lbInfo.setText("AutoCMS - Code By ThienDepZaii - SystemError");
 
-        btnContact.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btnContact.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         btnContact.setText("Contact Me");
         btnContact.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,10 +265,10 @@ public class FormMain extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -279,23 +284,22 @@ public class FormMain extends javax.swing.JFrame {
         new Thread(() -> {
             String cookie = tfCookie.getText();
             if (!cookie.equals("")) {
-                showProcess("Đang đăng nhập...");
+                showProcess("Login...");
                 inpSetEnbled(false);
                 Main.cmsLogin = new CMSLogin(cookie);
                 try {
                     Main.cmsLogin.login();
                 } catch (LoginException ex) {
-                    showProcess("Đăng nhập không thành công!");
+                    showProcess("Login Fail!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
                     return;
                 } catch (IOException ex) {
-                    showProcess("Kết nối đăng nhập không thành công!");
+                    showProcess("Connect Fail!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
                     return;
                 }
-
                 Main.cmsAccount = Main.cmsLogin.getCmsAccount();
                 Main.course = Main.cmsLogin.getCourse();
                 lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
@@ -309,11 +313,11 @@ public class FormMain extends javax.swing.JFrame {
                 inpSetEnbled(true);
                 cbbQuiz.setEnabled(false);
                 btnSolution.setEnabled(false);
-                showProcess("Đăng nhập thành công!");
+                showProcess("Login done!");
                 Function.debug(Main.cmsAccount.toString());
                 Function.debug(Arrays.toString(Main.course));
             } else {
-                alertWar("Bạn phải nhập Cookie!");
+                alertWar("You must enter Cookie!");
             }
         }).start();
     }//GEN-LAST:event_btnLoginActionPerformed
@@ -321,39 +325,39 @@ public class FormMain extends javax.swing.JFrame {
     private void btnSolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolutionActionPerformed
         int id = cbbQuiz.getSelectedIndex();
         if (id < 1) {
-            alertErr("Bạn phải chọn ít nhất 1 quiz để auto!");
+            alertErr("You must choose at least 1 quiz!");
             return;
         }
         new Thread(() -> {
             inpSetEnbled(false);
+            showProcess("Solving....");
             int start = id - 1;
             int end = start;
             if (id - 1 == Main.quiz.length) {
                 start = 0;
                 end = id - 2;
             }
-            done = 0;
-            err = 0;
-            showProcess("Đang giải... D: " + done + ", F: " + err + ", T: " + (end - start + 1));
+            cmsSolution = new CMSSolution[end - start + 1];
             for (i = start; i <= end; i++) {
                 new Thread(() -> {
-                    CMSSolution cmsSolution = new CMSSolution();
-                    cmsSolution.setCmsAccount(Main.cmsAccount);
-                    cmsSolution.setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
-                    cmsSolution.setQuiz(Main.quiz[i]);
-                    cmsSolution.solution();
-                    if (cmsSolution.isDone()) {
-                        done++;
+                    cmsSolution[i] = new CMSSolution();
+                    cmsSolution[i].setCmsAccount(Main.cmsAccount);
+                    cmsSolution[i].setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
+                    cmsSolution[i].setQuiz(Main.quiz[i]);
+                    try {
+                        cmsSolution[i].solution();
+                    } catch (SolutionException | IOException | BuildQuizException ex) {
+                        System.out.println(ex.toString());
                     }
+                    finish++;
                 }).start();
                 Function.sleep(100);
             }
             int time = 0;
             do {
-                showProcess("Đang giải... D: " + done + ", F: " + err + ", T: " + (end - start + 1) + ", S: " + ++time);
+                showProcess(cmsSolution, ++time);
                 Function.sleep(1000);
-            } while (err + done < end - start + 1);
-            showProcess("Giải hoàn tất! D: " + done + ", F: " + err + ", T: " + (end - start + 1) + ", S: " + time);
+            } while (finish < end - start + 1);
             inpSetEnbled(true);
         }).start();
     }//GEN-LAST:event_btnSolutionActionPerformed
@@ -370,12 +374,12 @@ public class FormMain extends javax.swing.JFrame {
             cmsQuizGet.setCourse(Main.course[id - 1]);
 
             try {
-                showProcess("Đang lấy dữ liệu môn " + Main.course[id - 1].getNumber() + "...");
+                showProcess("Retrieving subject " + Main.course[id - 1].getNumber() + " data...");
                 cmsQuizGet.getRaw();
                 cmsQuizGet.getStandard();
 
             } catch (IOException ex) {
-                showProcess("Request lấy dữ liệu Quiz thất bại!");
+                showProcess("Get data subject error!");
                 tfCookie.setEnabled(true);
                 btnLogin.setEnabled(true);
                 cbbCourse.setEnabled(true);
@@ -383,7 +387,7 @@ public class FormMain extends javax.swing.JFrame {
             } catch (BuildQuizException ex) {
                 Logger.getLogger(FormMain.class.getName()).log(Level.SEVERE, null, ex);
             }
-            showProcess("Tìm thành công " + cmsQuizGet.getQuiz().length + " Quiz!");
+            showProcess("Find " + cmsQuizGet.getQuiz().length + " quiz success!");
             cbbQuiz.removeAllItems();
             cbbQuiz.addItem("Select Quiz...");
             for (Quiz quiz : cmsQuizGet.getQuiz()) {
@@ -410,8 +414,57 @@ public class FormMain extends javax.swing.JFrame {
         btnSolution.setEnabled(enbled);
     }
 
+    public void showProcess(CMSSolution[] cmsSolution, int time) {
+        int len = cmsSolution.length;
+        int done = 0;
+        int fail = 0;
+        boolean useSharp = false;
+        String show = "Solving "+Function.time(time)+"...##";
+        for (int i = 0; i < len; i++) {
+            int quiz = Function.getInt(cmsSolution[i].getQuiz().getName());
+            String name = cmsSolution != null ? quiz != -1 ? quiz + ":" : "FT:" : "";
+            String score = name + (cmsSolution != null ? Function.roundReal(cmsSolution[i].getScorePresent(),2) + "" : "0");
+            switch (cmsSolution[i].getStatus()) {
+                case -1:
+                    score += "! - ";
+                    break;
+                case 2:
+                    score += "R - ";
+                    break;
+                case 0:
+                    score += "F - ";
+                    break;
+                case 1:
+                    score += "D - ";
+                    break;
+            }
+            show += score;
+            if(i>=len/2 && !useSharp){
+                show = show.substring(0, show.length() - 3);
+                useSharp = true;
+                show += "##";
+            }
+        }
+        show = show.substring(0, show.length() -  3);
+        showProcess(show);
+    }
+
     public void showProcess(String s) {
-        lbProcess.setText(s);
+        String line = ".....................................";
+        String br = "<br>";
+        String[] splLine = s.split("\\#\\#");
+        String show = "<html><center>";
+        if(splLine.length==1){
+            show += line + br + splLine[0] + br + line;
+        }
+        if(splLine.length==2){
+            show += line + br + splLine[0] + br + splLine[1];
+        }
+        if(splLine.length==3){
+            show += splLine[0] + br + splLine[1] + br + splLine[2];
+        }
+        show += "</center></html>";
+        lbProcess.setText(show);
     }
 
     public void alertInf(String s) {

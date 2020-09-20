@@ -32,6 +32,7 @@ public class BuildQuiz {
     private CMSAccount cmsAccount;
     private String url;
     private String htmlResponse;
+    private boolean getStatus;
 
     private Quiz quiz;
 
@@ -40,13 +41,15 @@ public class BuildQuiz {
     public BuildQuiz() {
     }
 
-    public BuildQuiz(CMSAccount cmsAccount, String url) {
+    public BuildQuiz(CMSAccount cmsAccount, String url, boolean getStatus) {
         this.cmsAccount = cmsAccount;
         this.url = url;
+        this.getStatus = getStatus;
     }
 
-    public BuildQuiz(String htmlResponse) {
+    public BuildQuiz(String htmlResponse, boolean getStatus) {
         this.htmlResponse = htmlResponse;
+        this.getStatus = getStatus;
     }
 
     public CMSAccount getCmsAccount() {
@@ -73,10 +76,26 @@ public class BuildQuiz {
         this.htmlResponse = htmlResponse;
     }
 
+    public boolean isGetStatus() {
+        return getStatus;
+    }
+
+    public void setGetStatus(boolean getStatus) {
+        this.getStatus = getStatus;
+    }
+
+    public boolean isIsBuild() {
+        return isBuild;
+    }
+
+    public void setIsBuild(boolean isBuild) {
+        this.isBuild = isBuild;
+    }
+
     public Quiz getQuiz() throws IOException, BuildQuizException {
         return quiz;
     }
-    
+
     public void build() throws IOException, BuildQuizException {
         if (isBuild) {
             return;
@@ -91,7 +110,7 @@ public class BuildQuiz {
         //parse document toàn trang
         Document document = Jsoup.parse(Jsoup.parse(htmlResponse).html());
         //
-        this.quiz = buildQuiz(document);
+        this.quiz = buildQuiz(document, getStatus);
         this.quiz.setUrl(url);
     }
 
@@ -110,11 +129,11 @@ public class BuildQuiz {
         Document document = Jsoup.parse(Jsoup.parse(htmlResponse).html());
         //
         this.quiz = new Quiz();
-        this.quiz.setQuizQuestion(buildQuizQuestions(document));
+        this.quiz.setQuizQuestion(buildQuizQuestions(document, getStatus));
         this.quiz.setUrl(url);
     }
 
-    private static Quiz buildQuiz(Document document) throws BuildQuizException {
+    private static Quiz buildQuiz(Document document, boolean getStatus) throws BuildQuizException {
         //===========================
         Element elmData = document.selectFirst("div[class='seq_contents tex2jax_ignore asciimath2jax_ignore']");
         if (elmData == null) {
@@ -145,11 +164,11 @@ public class BuildQuiz {
         //set QuizQuestion
         String content = elmData.attr("data-content");
         document = Jsoup.parse(content);
-        quiz.setQuizQuestion(buildQuizQuestions(document));
+        quiz.setQuizQuestion(buildQuizQuestions(document, getStatus));
         return quiz;
     }
 
-    public static QuizQuestion[] buildQuizQuestions(Document document) throws BuildQuizException {
+    public static QuizQuestion[] buildQuizQuestions(Document document, boolean getSatus) throws BuildQuizException {
         //kiểu chọn
         Elements elmsPoly = document.select("div[class='poly']");
         //kiểu nhập
@@ -172,8 +191,9 @@ public class BuildQuiz {
             } catch (BuildQuizException e) {
                 continue;
             }
+            quizQuestion.setAmountInput(-1);
             quizQuestion.setMultiChoice(quizQuestion.getType().equals("checkbox"));
-            quizQuestion.setCorrect(elmWraper.selectFirst("span[class='sr']").text().equals("correct"));
+            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
             alQuizQuestions.add(quizQuestion);
         }
         //xử lý kiểu text sau
@@ -192,6 +212,7 @@ public class BuildQuiz {
             }
             quizQuestion.setAmountInput(elmPolyInput.select("input").size());
             quizQuestion.setMultiChoice(quizQuestion.getAmountInput() > 1);
+            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
             alQuizQuestions.add(quizQuestion);
         }
         QuizQuestion[] quizQuestions = new QuizQuestion[alQuizQuestions.size()];
