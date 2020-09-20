@@ -107,8 +107,10 @@ public class QuizQuestion {
 
     @Override
     public String toString() {
-        return "QuizQuestion{" + "name=" + name + ", type=" + type + ", question=" + question + ", key=" + key + ", listValue=" + Arrays.toString(listValue) + ", multiChoice=" + multiChoice + ", selectValue=" + selectValue + ", testCount=" + testCount + ", correct=" + correct + '}';
+        return "QuizQuestion{" + "name=" + name + ", type=" + type + ", question=" + question + ", key=" + key + ", listValue=" + Arrays.toString(listValue) + ", amountInput=" + amountInput + ", multiChoice=" + multiChoice + ", selectValue=" + selectValue + ", testCount=" + testCount + ", correct=" + correct + '}';
     }
+
+
 
 
  

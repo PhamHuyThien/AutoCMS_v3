@@ -1,0 +1,9 @@
+History V3.2.0
+update CMSSolution
+bỏ qua câu hỏi chứa đáp án tự luận
+không bỏ qua cả bài chứa đáp án tự luận
+fix lỗi k giải bài
+
+History V3.0.1:
+- Update CMSLogin 
+- Fix Object CMSAccount

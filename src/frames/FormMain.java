@@ -332,7 +332,6 @@ public class FormMain extends javax.swing.JFrame {
                 start = 0;
                 end = id - 2;
             }
-
             done = 0;
             err = 0;
             showProcess("Đang giải... D: " + done + ", F: " + err + ", T: " + (end - start + 1));

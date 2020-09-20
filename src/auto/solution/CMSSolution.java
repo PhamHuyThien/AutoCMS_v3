@@ -1,5 +1,7 @@
 package auto.solution;
 
+import auto.getquiz.BuildQuiz;
+import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.exception.SolutionException;
 import function.Function;
 import function.combination.Combination;
@@ -9,10 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import object.cms.CMSAccount;
 import object.course.Course;
 import object.course.quiz.Quiz;
@@ -35,10 +33,10 @@ public class CMSSolution {
     private Course course;
     private Quiz quiz;
 
-    private String[] sToHop;
-
     private ArrayList<ArrayList<Integer>> alInt;
+    private double scorePresent;
 
+    private boolean isUsing;
     private boolean done;
 
     public CMSSolution() {
@@ -73,12 +71,21 @@ public class CMSSolution {
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
     }
-
+    
+    public double getScorePresent(){
+        return Function.roundReal(scorePresent, 2);
+    }
+    
     public boolean isDone() {
         return done;
     }
 
     public void solution() {
+        if(isUsing){
+            return;
+        }
+        isUsing = !isUsing;
+        scorePresent = quiz.getScore();
         //request init
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("cookie", cmsAccount.getCookie());
@@ -97,35 +104,47 @@ public class CMSSolution {
                 paramPost = parseParamPost();
             } catch (SolutionException e) {
                 //
-                System.out.println("solution parseParamPost => "+e.toString());
+                System.out.println("solution parseParamPost => " + e.toString());
                 continue;
             }
+            System.out.println(paramPost);
             HttpRequest httpRequest = new HttpRequest(urlPost, paramPost, httpRequestHeader);
             String jsonResp = null;
             try {
                 jsonResp = httpRequest.getResponseHTML();
             } catch (IOException ex) {
                 //
-                System.out.println("solution httpRequest => "+ex.toString());
+                System.out.println("solution httpRequest => " + ex.toString());
                 continue;
             }
             System.out.println(jsonResp);
             //
+
             Object o = JSONValue.parse(jsonResp);
             JSONObject jsonObj = (JSONObject) o;
+            boolean solutionProgressChanged = Boolean.parseBoolean(jsonObj.get("progress_changed").toString());
+            if (solutionProgressChanged == false) {
+                System.out.println("POST ERROR");
+                Function.sleep(TIME_SLEEP_SOLUTION);
+                continue;
+            }
             String solutionContent = String.valueOf(jsonObj.get("contents").toString());
             double solutionScore = Function.roundReal(Double.parseDouble(jsonObj.get("current_score").toString()), 3);
-            boolean solutionSuccess = Boolean.parseBoolean(jsonObj.get("success").toString());
+            boolean correct = jsonObj.get("success").toString().equals("correct");
+            
+            scorePresent = solutionScore;
             //
-            if (solutionScore == totalMaxScore(quiz)) {
+            if (solutionScore == totalMaxScore(quiz) || correct) {
                 done = true;
                 break;
             }
             try {
-                quiz = checkResultSolution(solutionContent, quiz);
-            } catch (SolutionException ex) {
+                quiz = updateStatusQuizQuestion(solutionContent, quiz);
+            } catch (BuildQuizException | SolutionException | IOException ex) {
+                System.out.println("CheckresultSolution " + ex.toString());
                 break;
             }
+            System.out.println(quiz);
             Function.sleep(TIME_SLEEP_SOLUTION);
         }
     }
@@ -137,7 +156,9 @@ public class CMSSolution {
         //ghép các parampost từ quizQuestion, thành paramPost Full
         for (int i = 0; i < quizQuestion.length; i++) {
             //câu hỏi này là câu hỏi tự luận thì bỏ qua
-            if(quizQuestion[i].getListValue()==null) continue;
+            if (quizQuestion[i].getListValue() == null) {
+                continue;
+            }
             String ans = setValue(quizQuestion[i]);
             sb.append(ans).append("&");
             if (!quizQuestion[i].isCorrect()) { //hoàn thành rồi thì bỏ qua tăng test
@@ -176,16 +197,14 @@ public class CMSSolution {
             if (quizQuestion.getType().equals("text")) {
                 value.append(quizQuestion.getKey()).append("=");
             }
-            alInt.forEach((alInteger) -> {
-                alInteger.forEach((integer) -> {
-                    if (quizQuestion.getType().equals("text")) {
-                        // kiểu text chỉ việc append value1,value2...
-                        value.append(Function.URLEncoder(quizQuestion.getListValue()[integer])).append("%2C");
-                    } else {
-                        // kiểu checkbox => key[]=value1&key[]=value2.....
-                        value.append(Function.URLEncoder(quizQuestion.getKey())).append("=").append(Function.URLEncoder(quizQuestion.getListValue()[integer])).append("&");
-                    }
-                });
+            alInt.get(index).forEach((i) -> {
+                if (quizQuestion.getType().equals("text")) {
+                    // kiểu text chỉ việc append value1,value2...
+                    value.append(Function.URLEncoder(quizQuestion.getListValue()[i])).append("%2C");
+                } else {
+                    // kiểu checkbox => key[]=value1&key[]=value2.....
+                    value.append(Function.URLEncoder(quizQuestion.getKey())).append("=").append(Function.URLEncoder(quizQuestion.getListValue()[i])).append("&");
+                }
             });
             //xóa kí tự nối cuối và return quizQuestion
             return makeUpValue(value.toString());
@@ -198,30 +217,47 @@ public class CMSSolution {
     }
 
     //kiểm tra giá trị đầu vào và setCorrect lại cho mỗi quizQuestion
-    private static Quiz checkResultSolution(String htmlResp, Quiz quiz) throws SolutionException {
-        htmlResp = Jsoup.parse(htmlResp).html();
-        Document document = Jsoup.parse(htmlResp);
-        Elements elmsResult = document.select("span[class='sr']");
-        if (elmsResult.isEmpty()) {
-            throw new SolutionException("checkResultSolution span[class='sr'] is empty!");
+    private static Quiz updateStatusQuizQuestion(String htmlResp, Quiz quiz) throws SolutionException, IOException, BuildQuizException {
+        BuildQuiz buildQuiz = new BuildQuiz();
+        buildQuiz.setHtmlResponse(htmlResp);
+        buildQuiz.buildQuizQuestion();
+        QuizQuestion[] quizResults = buildQuiz.getQuiz().getQuizQuestion();
+        if (!compareKeyQuizQuestion(quiz.getQuizQuestion(), quizResults)) {
+            throw new SolutionException("updateStatusQuizQuestion QuizResult != QuizStandard!");
         }
-        int i = 0;
-        for (Element elmResult : elmsResult) {
-            String resHtml = elmResult.text().trim().toLowerCase();
-            if (!resHtml.equals("correct") && !resHtml.equals("incorrect")) {
-                throw new SolutionException("checkResultSolution can't know result!");
-            }
-            quiz.getQuizQuestion()[i++].setCorrect(resHtml.equals("correct"));
+        for(int i=0; i<quizResults.length; i++){
+            quiz.getQuizQuestion()[i].setCorrect(quizResults[i].isCorrect());
         }
         return quiz;
     }
 
+    private static boolean compareKeyQuizQuestion(QuizQuestion[] quizQuestionsOne, QuizQuestion[] quizQuestionsTwo) {
+        if (quizQuestionsOne.length == quizQuestionsTwo.length) {
+            for(int i=0; i<quizQuestionsOne.length; i++){
+                if(!quizQuestionsOne[i].getKey().equals(quizQuestionsTwo[i].getKey())){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+//    private static int searchQuizQuestion(QuizQuestion quizQuestionSearch, QuizQuestion[] quizQuestionsArr) {
+//        for (int i = 0; i < quizQuestionsArr.length; i++) {
+//            if (quizQuestionSearch.getKey().equals(quizQuestionsArr[i].getKey())) {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
+
     private static String makeUpValue(String value) {
         int len = value.length();
-        if (value.toCharArray()[len - 1] == '&') {
+        if (value.endsWith("&")) {
             return value.substring(0, len - 1);
         }
-        if (value.indexOf("%2c") == len - 3) {
+        if (value.endsWith("%2C")) {
             return value.substring(0, len - 3);
         }
         return value;

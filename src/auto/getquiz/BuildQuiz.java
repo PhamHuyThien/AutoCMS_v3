@@ -31,6 +31,7 @@ public class BuildQuiz {
 
     private CMSAccount cmsAccount;
     private String url;
+    private String htmlResponse;
 
     private Quiz quiz;
 
@@ -42,6 +43,10 @@ public class BuildQuiz {
     public BuildQuiz(CMSAccount cmsAccount, String url) {
         this.cmsAccount = cmsAccount;
         this.url = url;
+    }
+
+    public BuildQuiz(String htmlResponse) {
+        this.htmlResponse = htmlResponse;
     }
 
     public CMSAccount getCmsAccount() {
@@ -60,23 +65,52 @@ public class BuildQuiz {
         this.url = url;
     }
 
-    public Quiz getQuiz() {
-        return quiz;
+    public String getHtmlResponse() {
+        return htmlResponse;
     }
 
+    public void setHtmlResponse(String htmlResponse) {
+        this.htmlResponse = htmlResponse;
+    }
+
+    public Quiz getQuiz() throws IOException, BuildQuizException {
+        return quiz;
+    }
+    
     public void build() throws IOException, BuildQuizException {
         if (isBuild) {
             return;
         }
         isBuild = !isBuild;
-        HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
-        httpRequestHeader.add("cookie", this.cmsAccount.getCookie());
-        HttpRequest httpRequest = new HttpRequest(url, httpRequestHeader);
-        String htmlResponse = httpRequest.getResponseHTML();
+        if (this.cmsAccount != null && this.url != null) {
+            HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
+            httpRequestHeader.add("cookie", this.cmsAccount.getCookie());
+            HttpRequest httpRequest = new HttpRequest(url, httpRequestHeader);
+            htmlResponse = httpRequest.getResponseHTML();
+        }
         //parse document toàn trang
         Document document = Jsoup.parse(Jsoup.parse(htmlResponse).html());
         //
         this.quiz = buildQuiz(document);
+        this.quiz.setUrl(url);
+    }
+
+    public void buildQuizQuestion() throws IOException, BuildQuizException {
+        if (isBuild) {
+            return;
+        }
+        isBuild = !isBuild;
+        if (this.cmsAccount != null && this.url != null) {
+            HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
+            httpRequestHeader.add("cookie", this.cmsAccount.getCookie());
+            HttpRequest httpRequest = new HttpRequest(url, httpRequestHeader);
+            htmlResponse = httpRequest.getResponseHTML();
+        }
+        //parse document toàn trang
+        Document document = Jsoup.parse(Jsoup.parse(htmlResponse).html());
+        //
+        this.quiz = new Quiz();
+        this.quiz.setQuizQuestion(buildQuizQuestions(document));
         this.quiz.setUrl(url);
     }
 
@@ -139,6 +173,7 @@ public class BuildQuiz {
                 continue;
             }
             quizQuestion.setMultiChoice(quizQuestion.getType().equals("checkbox"));
+            quizQuestion.setCorrect(elmWraper.selectFirst("span[class='sr']").text().equals("correct"));
             alQuizQuestions.add(quizQuestion);
         }
         //xử lý kiểu text sau
@@ -156,12 +191,12 @@ public class BuildQuiz {
                 //not continue;
             }
             quizQuestion.setAmountInput(elmPolyInput.select("input").size());
-            quizQuestion.setMultiChoice(quizQuestion.getAmountInput()>1);
+            quizQuestion.setMultiChoice(quizQuestion.getAmountInput() > 1);
             alQuizQuestions.add(quizQuestion);
         }
         QuizQuestion[] quizQuestions = new QuizQuestion[alQuizQuestions.size()];
-        int i=0;
-        for(QuizQuestion q: alQuizQuestions){
+        int i = 0;
+        for (QuizQuestion q : alQuizQuestions) {
             quizQuestions[i++] = q;
         }
         return quizQuestions;
@@ -199,6 +234,5 @@ public class BuildQuiz {
         }
         return listValue;
     }
-
 
 }
