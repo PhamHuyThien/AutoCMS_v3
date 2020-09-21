@@ -149,8 +149,7 @@ public class BuildQuiz {
         Quiz quiz = new Quiz();
         //setname
         Element elementNameQuiz = document.selectFirst("h2[class='hd hd-2 unit-title']");
-        String name = elementNameQuiz.html();
-        quiz.setName(name.contains("_") ? name.substring(0, name.indexOf("_")) : name);
+        quiz.setName(buildNameQuiz(elementNameQuiz.html()));
         //set score
         double score = Double.parseDouble(elmData.attr("data-problem-score"));
         quiz.setScore(score);
@@ -176,6 +175,7 @@ public class BuildQuiz {
         //xử lý kiểu chọn trước
         for (Element elmPoly : elmsPoly) {
             Element elmWraper = elmPoly.nextElementSibling();
+            Element elmStatus = elmWraper.selectFirst("span[class='sr']");
             //
             QuizQuestion quizQuestion = new QuizQuestion();
             quizQuestion.setName(elmPoly.selectFirst("h3").text());
@@ -185,16 +185,18 @@ public class BuildQuiz {
             try {
                 quizQuestion.setListValue(buildListValue(elmWraper));
             } catch (BuildQuizException e) {
+                //không lấy được câu trả lời
                 continue;
             }
             quizQuestion.setAmountInput(-1);
             quizQuestion.setMultiChoice(quizQuestion.getType().equals("checkbox"));
-            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
+            quizQuestion.setCorrect(getSatus && elmStatus != null ? elmStatus.text().equals("correct") : false);
             alQuizQuestions.add(quizQuestion);
         }
         //xử lý kiểu text sau
         for (Element elmPolyInput : elmsPolyInput) {
             Element elmWraper = elmPolyInput.nextElementSibling();
+            Element elmStatus = elmWraper.selectFirst("span[class='sr']");
 
             QuizQuestion quizQuestion = new QuizQuestion();
             quizQuestion.setName(elmPolyInput.selectFirst("h3").text());
@@ -204,11 +206,12 @@ public class BuildQuiz {
             try {
                 quizQuestion.setListValue(buildListValueText(elmPolyInput));
             } catch (BuildQuizException e) {
+                //có chứa đáp án tự luận
                 //not continue;
             }
             quizQuestion.setAmountInput(elmPolyInput.select("input").size());
             quizQuestion.setMultiChoice(quizQuestion.getAmountInput() > 1);
-            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
+            quizQuestion.setCorrect(getSatus && elmStatus != null ? elmStatus.text().equals("correct") : false);
             alQuizQuestions.add(quizQuestion);
         }
         QuizQuestion[] quizQuestions = new QuizQuestion[alQuizQuestions.size()];
@@ -252,4 +255,13 @@ public class BuildQuiz {
         return listValue;
     }
 
+    private static String buildNameQuiz(String name) {
+        if (name.contains("_")) {
+            return name.substring(0, name.indexOf("_")).trim();
+        }
+        if (name.contains("-")) {
+            return name.substring(0, name.indexOf("-")).trim();
+        }
+        return name;
+    }
 }
