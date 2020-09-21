@@ -58,6 +58,7 @@ public class BuildQuizThreadPool implements Runnable {
         BuildQuiz buildQuiz = new BuildQuiz();
         buildQuiz.setCmsAccount(cmsAccount);
         buildQuiz.setUrl(url);
+        buildQuiz.setGetStatus(true);
         try {
             buildQuiz.build();
             cmsQuizGet.hashsetQuiz.add(buildQuiz.getQuiz());

@@ -17,7 +17,7 @@ import java.util.Arrays;
  */
 public class TestCombination {
     public static void main(String[] args) throws InputException {
-        Permutation permutation = new Permutation(2, 4);
+        Permutation permutation = new Permutation(1, 4);
         permutation.build();
 //        Combination combination = new Combination(3, 4);
 //        combination.build();

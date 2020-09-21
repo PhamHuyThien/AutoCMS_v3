@@ -1,11 +1,20 @@
+v3.2.2
+fix lỗi k chạy đc 1 quiz
+fix lỗi chạy không đúng quiz trên form
+fix lỗi hoàn thành quiz rồi mà vẫn phải đợi 1 phút
+fix lỗi hiển thị
+fix lỗi bị treo khi giải bải chứa đáp án tự luận
+
 V3.2.1
 update lại giao diện
 hiển thị thông tin auto ra màn hình
-History V3.2.0
+
+V3.2.0
 update CMSSolution
 bỏ qua câu hỏi chứa đáp án tự luận
 không bỏ qua cả bài chứa đáp án tự luận
 fix lỗi k giải bài
-History V3.0.1:
+
+V3.0.1:
 - Update CMSLogin 
 - Fix Object CMSAccount

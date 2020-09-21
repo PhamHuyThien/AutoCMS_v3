@@ -20,8 +20,6 @@ import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
 /**
- * @name AutoCMS v3.0.0 OB1
- * @created 03/06/2020
  * @author ThienDepZaii - SystemError
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com

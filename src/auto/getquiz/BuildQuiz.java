@@ -156,10 +156,10 @@ public class BuildQuiz {
             quiz.setName(name);
         }
         //set score
-        double score = Function.roundReal(Double.parseDouble(elmData.attr("data-problem-score")), 3);
+        double score = Double.parseDouble(elmData.attr("data-problem-score"));
         quiz.setScore(score);
         //set score posible
-        double scorePosible = Function.roundReal(Double.parseDouble(elmData.attr("data-problem-total-possible")), 3);
+        double scorePosible = Double.parseDouble(elmData.attr("data-problem-total-possible"));
         quiz.setScorePossible(scorePosible);
         //set QuizQuestion
         String content = elmData.attr("data-content");

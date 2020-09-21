@@ -19,8 +19,6 @@ import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
 /**
- * @name AutoCMS v3.0.0 OB1
- * @created 03/06/2020
  * @author ThienDepZaii - SystemError
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com
@@ -81,7 +79,7 @@ public class CMSSolution {
         return status;
     }
 
-    public void solution() throws SolutionException, IOException, BuildQuizException {
+    public void solution() throws SolutionException {
         if (isUsing) {
             return;
         }
@@ -89,32 +87,36 @@ public class CMSSolution {
         isUsing = !isUsing;
         scorePresent = quiz.getScore();
         //đã đủ điểm
-        if (quiz.getScore() == totalMaxScore(quiz)) {
+        if (quiz.getScore() == quiz.getScorePossible() || isDoneQuiz(quiz)) {
             status = 1;
             return;
         }
-        Function.debug(totalMaxScore(quiz) + " MAX");
+        quiz = resetQuizQuestion(quiz);
         final String urlPost = buildURLPost();
         double solutionScore = 0;
+        long timeTick = 0;
         do {
-            try {
-                //
-                String jsonResponse = httpRequestSolution(urlPost, buildParamPost());
-                Function.debug(jsonResponse);
-                //
-                Object o = JSONValue.parse(jsonResponse);
-                JSONObject jsonObj = (JSONObject) o;
-                solutionScore = Function.roundReal(Double.parseDouble(jsonObj.get("current_score").toString()), 3);
-                quiz = updateStatusQuizQuestion(jsonObj.get("contents").toString(), quiz);
-                Function.debug(quiz.toString());
-                //
-                scorePresent = solutionScore;
-                Function.sleep(TIME_SLEEP_SOLUTION);
-            } catch (BuildQuizException | SolutionException | IOException | NumberFormatException e) {
-                status = 0;
-                throw new SolutionException(e.toString());
+            if (Function.getCurrentMilis() - timeTick > 60000) {
+                try {
+                    //
+                    String jsonResponse = httpRequestSolution(urlPost, buildParamPost());
+                    Function.debug(jsonResponse);
+                    //
+                    Object o = JSONValue.parse(jsonResponse);
+                    JSONObject jsonObj = (JSONObject) o;
+                    solutionScore = Double.parseDouble(jsonObj.get("current_score").toString());
+                    quiz = updateStatusQuizQuestion(jsonObj.get("contents").toString(), quiz);
+                    Function.debug(quiz.toString());
+                    //
+                    scorePresent = solutionScore;
+                    timeTick = Function.getCurrentMilis();
+                } catch (Exception e) {
+                    status = 0;
+                    throw new SolutionException(e.toString());
+                }
             }
-        } while (solutionScore < totalMaxScore(quiz));
+            Function.sleep(100);
+        } while (!isDoneQuiz(quiz));
         status = 1;
     }
 
@@ -234,19 +236,22 @@ public class CMSSolution {
         return value;
     }
 
-    private static double totalMaxScore(Quiz quiz) {
-        //tổng số câu hỏi
-        int totalQuizQuestion = quiz.getQuizQuestion().length;
-        //tổng số câu hỏi bỏ qua
-        int quizQuestionEssay = 0;
-        for (QuizQuestion quizQuestion : quiz.getQuizQuestion()) {
-            if (quizQuestion.getListValue() == null) {
-                quizQuestionEssay++;
+    private static boolean isDoneQuiz(Quiz quiz) {
+        QuizQuestion quizQuestions[] = quiz.getQuizQuestion();
+        int done = 0;
+        for (QuizQuestion quizQuestion : quizQuestions) {
+            if (quizQuestion.isCorrect() || quizQuestion.getListValue() == null) {
+                done++;
             }
         }
-        //điểm 1 bài
-        double scoreOneQuestion = Function.roundReal(quiz.getScorePossible() / totalQuizQuestion, 3);
-        return Function.roundReal((totalQuizQuestion - quizQuestionEssay) * scoreOneQuestion, 3);
+        return done == quizQuestions.length;
+    }
+
+    private static Quiz resetQuizQuestion(Quiz quiz) {
+        for (QuizQuestion quizQuestion : quiz.getQuizQuestion()) {
+            quizQuestion.setCorrect(false);
+        }
+        return quiz;
     }
 
     private String buildURLPost() {

@@ -17,15 +17,13 @@ import object.course.Course;
 import object.course.quiz.Quiz;
 
 /**
- * @name AutoCMS v3.0.0 OB1
- * @created 03/06/2020
  * @author ThienDepZaii - SystemError
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class FormMain extends javax.swing.JFrame {
 
-    private int i;
+    private int i, j;
     private int index;
     private CMSSolution cmsSolution[];
     private int finish;
@@ -33,6 +31,7 @@ public class FormMain extends javax.swing.JFrame {
     public FormMain() {
         initComponents();
         setLocationRelativeTo(null);
+        init();
     }
 
     @SuppressWarnings("unchecked")
@@ -40,8 +39,8 @@ public class FormMain extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lbTitle = new javax.swing.JLabel();
+        lbSlogan = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         tfCookie = new javax.swing.JTextField();
         btnLogin = new javax.swing.JButton();
@@ -62,15 +61,15 @@ public class FormMain extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel1.setFont(new java.awt.Font("Consolas", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 204, 204));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("FPL@utoCMS");
+        lbTitle.setFont(new java.awt.Font("Consolas", 1, 36)); // NOI18N
+        lbTitle.setForeground(new java.awt.Color(0, 204, 204));
+        lbTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbTitle.setText("title");
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 51, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Version V3.2.1 - 10 Quiz 10 Point Easy!");
+        lbSlogan.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        lbSlogan.setForeground(new java.awt.Color(0, 51, 255));
+        lbSlogan.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbSlogan.setText("Slogan");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -78,24 +77,24 @@ public class FormMain extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbSlogan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+                    .addComponent(lbTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(54, 54, 54)
-                .addComponent(jLabel2)
+                .addComponent(lbSlogan)
                 .addContainerGap(17, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel1)
+                    .addComponent(lbTitle)
                     .addContainerGap(34, Short.MAX_VALUE)))
         );
 
@@ -184,10 +183,10 @@ public class FormMain extends javax.swing.JFrame {
                     .addComponent(cbbCourse, 0, 154, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(lbProcess)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(132, 132, 132)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnSolution, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(139, 139, 139))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -202,9 +201,9 @@ public class FormMain extends javax.swing.JFrame {
                     .addComponent(cbbQuiz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(lbProcess, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSolution)
-                .addContainerGap())
+                .addGap(16, 16, 16))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSolution, cbbCourse, cbbQuiz, lbHello, lbUserId});
@@ -338,16 +337,17 @@ public class FormMain extends javax.swing.JFrame {
                 end = id - 2;
             }
             cmsSolution = new CMSSolution[end - start + 1];
+            j = 0;
             for (i = start; i <= end; i++) {
                 new Thread(() -> {
-                    cmsSolution[i] = new CMSSolution();
-                    cmsSolution[i].setCmsAccount(Main.cmsAccount);
-                    cmsSolution[i].setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
-                    cmsSolution[i].setQuiz(Main.quiz[i]);
+                    cmsSolution[j] = new CMSSolution();
+                    cmsSolution[j].setCmsAccount(Main.cmsAccount);
+                    cmsSolution[j].setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
+                    cmsSolution[j].setQuiz(Main.quiz[i]);
                     try {
-                        cmsSolution[i].solution();
-                    } catch (SolutionException | IOException | BuildQuizException ex) {
-                        System.out.println(ex.toString());
+                        cmsSolution[j++].solution();
+                    } catch (SolutionException e) {
+                        Function.debug(e.toString());
                     }
                     finish++;
                 }).start();
@@ -355,10 +355,12 @@ public class FormMain extends javax.swing.JFrame {
             }
             int time = 0;
             do {
-                showProcess(cmsSolution, ++time);
+                showProcess(cmsSolution, ++time, false);
                 Function.sleep(1000);
             } while (finish < end - start + 1);
+            showProcess(cmsSolution, time, true);
             inpSetEnbled(true);
+            Function.contactMe();
         }).start();
     }//GEN-LAST:event_btnSolutionActionPerformed
 
@@ -414,38 +416,36 @@ public class FormMain extends javax.swing.JFrame {
         btnSolution.setEnabled(enbled);
     }
 
-    public void showProcess(CMSSolution[] cmsSolution, int time) {
+    public void showProcess(CMSSolution[] cmsSolution, int time, boolean finish) {
         int len = cmsSolution.length;
-        int done = 0;
-        int fail = 0;
         boolean useSharp = false;
-        String show = "Solving "+Function.time(time)+"...##";
+        String show = "Solving " + Function.time(time) + (finish ? " - " + cmsSolution.length + " Quiz has been completed!" : "...") + "##";
         for (int i = 0; i < len; i++) {
             int quiz = Function.getInt(cmsSolution[i].getQuiz().getName());
             String name = cmsSolution != null ? quiz != -1 ? quiz + ":" : "FT:" : "";
-            String score = name + (cmsSolution != null ? Function.roundReal(cmsSolution[i].getScorePresent(),2) + "" : "0");
+            String score = name + (cmsSolution != null ? Function.roundReal(cmsSolution[i].getScorePresent(), 1) + ":" : "0:");
             switch (cmsSolution[i].getStatus()) {
                 case -1:
                     score += "! - ";
                     break;
                 case 2:
-                    score += "R - ";
+                    score += "r - ";
                     break;
                 case 0:
-                    score += "F - ";
+                    score += "f - ";
                     break;
                 case 1:
-                    score += "D - ";
+                    score += "d - ";
                     break;
             }
             show += score;
-            if(i>=len/2 && !useSharp){
+            if (i >= len / 2 && !useSharp && len > 5) {
                 show = show.substring(0, show.length() - 3);
                 useSharp = true;
                 show += "##";
             }
         }
-        show = show.substring(0, show.length() -  3);
+        show = show.substring(0, show.length() - 3);
         showProcess(show);
     }
 
@@ -454,13 +454,13 @@ public class FormMain extends javax.swing.JFrame {
         String br = "<br>";
         String[] splLine = s.split("\\#\\#");
         String show = "<html><center>";
-        if(splLine.length==1){
+        if (splLine.length == 1) {
             show += line + br + splLine[0] + br + line;
         }
-        if(splLine.length==2){
-            show += line + br + splLine[0] + br + splLine[1];
+        if (splLine.length == 2) {
+            show += splLine[0] + br + splLine[1] + br + line;
         }
-        if(splLine.length==3){
+        if (splLine.length == 3) {
             show += splLine[0] + br + splLine[1] + br + splLine[2];
         }
         show += "</center></html>";
@@ -479,6 +479,11 @@ public class FormMain extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Error!!!", JOptionPane.ERROR_MESSAGE);
     }
 
+    private void init() {
+        setTitle(Main.APP_NAME + " v" + Main.APP_VER + " - " + Main.APP_SLOGAN);
+        lbTitle.setText(Main.APP_NAME);
+        lbSlogan.setText("Version " + Main.APP_VER + " - " + Main.APP_SLOGAN);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnContact;
@@ -486,8 +491,6 @@ public class FormMain extends javax.swing.JFrame {
     private javax.swing.JButton btnSolution;
     private javax.swing.JComboBox<String> cbbCourse;
     private javax.swing.JComboBox<String> cbbQuiz;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -495,6 +498,8 @@ public class FormMain extends javax.swing.JFrame {
     private javax.swing.JLabel lbHello;
     private javax.swing.JLabel lbInfo;
     private javax.swing.JLabel lbProcess;
+    private javax.swing.JLabel lbSlogan;
+    private javax.swing.JLabel lbTitle;
     private javax.swing.JLabel lbUserId;
     private javax.swing.JTextField tfCookie;
     // End of variables declaration//GEN-END:variables

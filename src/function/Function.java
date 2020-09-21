@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.text.Normalizer;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -15,15 +16,18 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import main.Main;
 
 /**
- * @name AutoCMS v3.0.0 OB1
- * @created 03/06/2020
  * @author ThienDepZaii - SystemError
  * @Facebook /ThienDz.SystemError
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Function {
+
+    public static long getCurrentMilis() {
+        return new Date().getTime();
+    }
 
     public static String time(int second) {
         String result = "";
@@ -51,7 +55,11 @@ public class Function {
     }
 
     public static double roundReal(double d, int index) {
-        return Double.parseDouble(String.format("%." + index + "g%n", d));
+        int j = 1;
+        for (int i = 0; i < index; i++) {
+            j *= 10;
+        }
+        return (double) Math.floor(d * j) / j;
     }
 
     public static String URLEncoder(String url) {
@@ -117,7 +125,7 @@ public class Function {
             "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
             "C:\\Program Files\\Internet Explorer\\iexplore.exe"
         };
-        String contact = "https://facebook.com/thiendz.systemerror";
+        String contact = Main.APP_CONTACT;
         for (String s : path) {
             try {
                 Function.shell(s, contact, "--new-tab", "--full-screen");

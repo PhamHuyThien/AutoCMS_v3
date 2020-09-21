@@ -1,3 +1,4 @@
+//code by ThienDepZaii
 package request;
 
 import request.support.HttpRequestProxy;
@@ -73,7 +74,7 @@ public class HttpRequest {
         this.httpRequestProxy = httpRequestProxy;
     }
 
-    public void connect() throws MalformedURLException, IOException {
+    public void connect() throws IOException {
         if (isConnected) {
             return;
         }

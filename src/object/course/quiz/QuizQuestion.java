@@ -11,15 +11,25 @@ import java.util.Arrays;
  */
 
 public class QuizQuestion {
+    //tên quiz
     private String name;
+    // kiểu [text, checkbox, radio]
     private String type;
+    //câu hỏi
     private String question;
+    //key request
     private String key;
+    //value request
     private String[] listValue;
+    //số lượng câu hỏi trên một question (dành cho type text)
     private int amountInput;
+    //có chọn nhiều đáp ans ko
     private boolean multiChoice;
+    //giá trị request đi
     private String selectValue;
+    //số lần thử
     private int testCount;
+    //hoàn thành
     private boolean correct;
 
     public QuizQuestion() {
