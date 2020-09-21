@@ -5,9 +5,14 @@
         <group>
             <file>file:/D:/AutoCMS/src/auto/solution/CMSSolution.java</file>
             <file>file:/D:/AutoCMS/src/auto/getquiz/CMSGetQuiz.java</file>
+            <file>file:/D:/AutoCMS/src/function/Function.java</file>
             <file>file:/D:/AutoCMS/src/frames/FormMain.java</file>
-            <file>file:/D:/AutoCMS/src/test/TestPostSolution.java</file>
+            <file>file:/D:/AutoCMS/src/object/cms/CMSAccount.java</file>
+            <file>file:/D:/AutoCMS/src/test/TestCeil.java</file>
             <file>file:/D:/AutoCMS/src/auto/getquiz/BuildQuizThreadPool.java</file>
+            <file>file:/D:/AutoCMS/History.txt</file>
+            <file>file:/D:/AutoCMS/src/object/course/quiz/Quiz.java</file>
+            <file>file:/D:/AutoCMS/src/object/course/Course.java</file>
             <file>file:/D:/AutoCMS/src/auto/getquiz/BuildQuiz.java</file>
             <file>file:/D:/AutoCMS/src/main/Main.java</file>
         </group>

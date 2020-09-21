@@ -48,10 +48,15 @@ public class Function {
         String regex = "([0-9]+?)";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(content);
-        if (m.find()) {
-            return Integer.parseInt(m.group());
+        String res = "";
+        while(m.find()){
+            res+=m.group();
         }
-        return -1;
+        try {
+            return Integer.parseInt(res);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     public static double roundReal(double d, int index) {

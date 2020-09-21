@@ -150,11 +150,7 @@ public class BuildQuiz {
         //setname
         Element elementNameQuiz = document.selectFirst("h2[class='hd hd-2 unit-title']");
         String name = elementNameQuiz.html();
-        if (name.contains("_")) {
-            quiz.setName(name.substring(0, name.indexOf("_")));
-        } else {
-            quiz.setName(name);
-        }
+        quiz.setName(name.contains("_") ? name.substring(0, name.indexOf("_")) : name);
         //set score
         double score = Double.parseDouble(elmData.attr("data-problem-score"));
         quiz.setScore(score);
