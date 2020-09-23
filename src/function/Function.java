@@ -1,7 +1,10 @@
 package function;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
@@ -16,6 +19,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.swing.JOptionPane;
 import main.Main;
 
 /**
@@ -25,10 +29,15 @@ import main.Main;
  */
 public class Function {
 
+    private static OutputStream os;
+
     public static long getCurrentMilis() {
         return new Date().getTime();
     }
-
+    
+    public static String getDate(){
+        return new Date().toString();
+    }
     public static String time(int second) {
         String result = "";
         int numberOfMinutes;
@@ -49,8 +58,8 @@ public class Function {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(content);
         String res = "";
-        while(m.find()){
-            res+=m.group();
+        while (m.find()) {
+            res += m.group();
         }
         try {
             return Integer.parseInt(res);
@@ -89,10 +98,16 @@ public class Function {
 
     public static void debug(String content) {
         System.out.println(content);
-    }
-
-    public static void writeLog(String log) {
-
+        try {
+            if(os == null){
+                os = new FileOutputStream("thiendz.log.txt");
+            }
+            content+= "\n\n";
+            os.write(content.getBytes());
+        } catch (IOException ex) {
+            alert("ghi log thất bại!");
+            System.exit(0);
+        }
     }
 
     public static void fixHTTPS() {
@@ -166,5 +181,17 @@ public class Function {
 
     public static String getOSName() {
         return System.getProperty("os.name");
+    }
+
+    public static String prompt(final String content) {
+        return JOptionPane.showInputDialog(null, content);
+    }
+
+    public static boolean confirm(final String content) {
+        return JOptionPane.showConfirmDialog(null, content) == 0;
+    }
+
+    public static void alert(final String content) {
+        JOptionPane.showMessageDialog(null, content);
     }
 }

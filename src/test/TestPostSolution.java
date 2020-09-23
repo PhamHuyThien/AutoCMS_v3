@@ -7,7 +7,7 @@ package test;
 
 import java.io.IOException;
 import request.HttpRequest;
-import request.support.HttpRequestHeader;
+import request.header.HttpRequestHeader;
 
 /**
  *

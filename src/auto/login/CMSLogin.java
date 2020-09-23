@@ -14,7 +14,7 @@ import org.jsoup.select.Elements;
 import object.cms.CMSAccount;
 import object.course.Course;
 import request.HttpRequest;
-import request.support.HttpRequestHeader;
+import request.header.HttpRequestHeader;
 
 /**
  * @name AutoCMS v3.0.0 OB1

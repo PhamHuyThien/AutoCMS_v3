@@ -16,7 +16,7 @@ import object.course.Course;
 import object.course.quiz.Quiz;
 import object.course.quiz.QuizQuestion;
 import request.HttpRequest;
-import request.support.HttpRequestHeader;
+import request.header.HttpRequestHeader;
 
 /**
  * @author ThienDepZaii - SystemError

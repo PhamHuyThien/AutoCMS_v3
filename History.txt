@@ -1,3 +1,5 @@
+v3.2.5
+thêm ghi log
 v3.3.4
 fix lỗi treo máy (khi không tìm được status QUIZQUESTION)
 v3.3.3

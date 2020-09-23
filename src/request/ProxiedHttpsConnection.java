@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import request.support.HttpRequestProxy;
+import request.header.HttpRequestProxy;
 
 public class ProxiedHttpsConnection extends HttpURLConnection {
 

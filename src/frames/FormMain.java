@@ -58,6 +58,11 @@ public class FormMain extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("AUTO CMS V3.2.1  - 10 Quiz 10 Điểm Easy!");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -292,11 +297,13 @@ public class FormMain extends javax.swing.JFrame {
                     showProcess("Login Fail!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
+                    Function.debug("Login Fail => "+ex.toString());
                     return;
                 } catch (IOException ex) {
                     showProcess("Connect Fail!");
                     tfCookie.setEnabled(true);
                     btnLogin.setEnabled(true);
+                    Function.debug("Connect Fail => "+ex.toString());
                     return;
                 }
                 Main.cmsAccount = Main.cmsLogin.getCmsAccount();
@@ -347,7 +354,7 @@ public class FormMain extends javax.swing.JFrame {
                     try {
                         cmsSolution[j++].solution();
                     } catch (SolutionException e) {
-                        Function.debug(e.toString());
+                        Function.debug("Solution Error => "+e.toString());
                     }
                     finish++;
                 }).start();
@@ -358,6 +365,13 @@ public class FormMain extends javax.swing.JFrame {
                 showProcess(cmsSolution, ++time, false);
                 Function.sleep(1000);
             } while (finish < end - start + 1);
+            Function.debug("--------------------------------");
+            Function.debug("QUIZ DONE");
+            Function.debug("--------------------------------");
+            for(CMSSolution cmsSolution: this.cmsSolution){
+                Function.debug(cmsSolution.getQuiz().toString());
+            }
+            Function.debug("--------------------------------");
             showProcess(cmsSolution, time, true);
             inpSetEnbled(true);
             Function.contactMe();
@@ -385,6 +399,7 @@ public class FormMain extends javax.swing.JFrame {
                 tfCookie.setEnabled(true);
                 btnLogin.setEnabled(true);
                 cbbCourse.setEnabled(true);
+                Function.debug("Get data subject error! => "+ex.toString());
                 return;
             } catch (BuildQuizException ex) {
                 Logger.getLogger(FormMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -407,6 +422,10 @@ public class FormMain extends javax.swing.JFrame {
         }).start();
 
     }//GEN-LAST:event_cbbCourseActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        
+    }//GEN-LAST:event_formWindowClosed
 
     public void inpSetEnbled(boolean enbled) {
         tfCookie.setEnabled(enbled);
@@ -481,8 +500,8 @@ public class FormMain extends javax.swing.JFrame {
 
     private void init() {
         setTitle(Main.APP_NAME + " v" + Main.APP_VER + " - " + Main.APP_SLOGAN);
-        lbTitle.setText(Main.APP_NAME);
-        lbSlogan.setText("Version " + Main.APP_VER + " - " + Main.APP_SLOGAN);
+        lbTitle.setText(Main.APP_NAME +" V"+Main.APP_VER);
+        lbSlogan.setText("Update "+Main.APP_TIME_UPDATE+" - " + Main.APP_SLOGAN);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

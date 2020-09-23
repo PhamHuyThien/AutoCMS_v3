@@ -1,8 +1,8 @@
 //code by ThienDepZaii
 package request;
 
-import request.support.HttpRequestProxy;
-import request.support.HttpRequestHeader;
+import request.header.HttpRequestProxy;
+import request.header.HttpRequestHeader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

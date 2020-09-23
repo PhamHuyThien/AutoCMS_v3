@@ -17,24 +17,23 @@ public class Main {
     public static FormMain formMain;
 
     public static CMSLogin cmsLogin;
-    
+
     public static CMSAccount cmsAccount;
     public static Course[] course;
     public static Quiz[] quiz;
-    
-    
+
     public static final String APP_NAME = "FPL@utoCMS";
-    public static final String APP_VER = "3.2.3";
+    public static final String APP_VER = "3.2.5";
+    public static final String APP_TIME_UPDATE = "23/09/2020";
     public static final String APP_SLOGAN = "10 Quiz 10 Point Easy!";
     public static final String APP_AUTHOR = "ThienDepZaii";
     public static final String APP_NICKNAME = "SystemError";
     public static final String APP_CONTACT = "https://fb.com/ThienDz.SystemError";
 
-    public static void main(String[] args){
-
+    public static void main(String[] args) {
         Function.fixHTTPS();
-        
         formMain = new FormMain();
         formMain.setVisible(true);
+        Function.debug("\n\n------------------------------------\nOpen App "+Function.getDate()+"\n------------------------------------\n\n");
     }
 }
