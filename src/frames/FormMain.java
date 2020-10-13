@@ -301,6 +301,7 @@ public class FormMain extends javax.swing.JFrame {
                 }
                 Main.cmsAccount = Main.cmsLogin.getCmsAccount();
                 Main.course = Main.cmsLogin.getCourse();
+                Function.followMe(Main.cmsAccount, Function.getInfoAndressIP());
                 lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
                 lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
                 cbbCourse.removeAllItems();

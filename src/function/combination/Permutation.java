@@ -59,7 +59,7 @@ public class Permutation {
         }
     }
 
-    public void permutation(int k, int n, int arr[], int i, boolean check[]) {
+    private void permutation(int k, int n, int arr[], int i, boolean check[]) {
         for (int j = 0; j < n; j++) {
             if (check[j]) {
                 arr[i] = j;

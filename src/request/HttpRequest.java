@@ -1,10 +1,12 @@
 //code by ThienDepZaii
 package request;
 
+import java.io.BufferedReader;
 import request.support.HttpRequestProxy;
 import request.support.HttpRequestHeader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -128,10 +130,10 @@ public class HttpRequest {
     public String getResponseHTML() throws IOException {
         connect();
         StringBuilder respHTML = new StringBuilder();
-        is = httpUrlConnection.getInputStream();
-        int c;
-        while ((c = is.read()) != -1) {
-            respHTML.append((char) c);
+        BufferedReader br = new BufferedReader(new InputStreamReader(httpUrlConnection.getInputStream(), "UTF-8"));
+        String c;
+        while ((c = br.readLine()) != null) {
+            respHTML.append(c);
         }
         return respHTML.toString().equals("") ? null : respHTML.toString();
     }

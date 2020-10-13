@@ -2,6 +2,8 @@ package auto.login;
 
 import auto.login.exception.LoginException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
@@ -13,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import object.cms.CMSAccount;
 import object.course.Course;
+import org.json.simple.parser.ParseException;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -30,7 +33,7 @@ public class CMSLogin {
     private CMSAccount cmsAccount;
     private Course[] course;
 
-    private final String CMS_URL_DASBOARD = "https://cms.poly.edu.vn/dashboard/";
+    private final String CMS_URL_DASHBOARD = "https://cms.poly.edu.vn/dashboard/";
 
     private boolean isLogin;
 
@@ -63,12 +66,9 @@ public class CMSLogin {
             return;
         }
         isLogin = !isLogin;
-        if (cookie == null) {
-            throw new LoginException("Login cookie is NULL!");
-        }
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("cookie", cookie);
-        HttpRequest httpRequest = new HttpRequest(CMS_URL_DASBOARD, httpRequestHeader);
+        HttpRequest httpRequest = new HttpRequest(CMS_URL_DASHBOARD, httpRequestHeader);
         String htmlResp = httpRequest.getResponseHTML();
         //
         Document document = Jsoup.parse(htmlResp);
@@ -87,15 +87,18 @@ public class CMSLogin {
         if (elmUserMetaData == null) {
             throw new LoginException("buildCMSAccount script[id='user-metadata'] is NULL!");
         }
-        //parse JSON
-        Object jObj = JSONValue.parse(elmUserMetaData.html());
-        JSONObject jsonObj = (JSONObject) jObj;
-        //build CMSAccount
-        CMSAccount cmsAccount = new CMSAccount();
-        cmsAccount.setUserName(jsonObj.get("username").toString());
-        cmsAccount.setUserId(String.valueOf(jsonObj.get("user_id")));
-        return cmsAccount;
-
+        try {
+            //parse JSON
+            Object jObj = JSONValue.parseWithException(elmUserMetaData.html());
+            JSONObject jsonObj = (JSONObject) jObj;
+            //build CMSAccount
+            CMSAccount cmsAccount = new CMSAccount();
+            cmsAccount.setUserName(jsonObj.get("username").toString());
+            cmsAccount.setUserId(jsonObj.get("user_id").toString());
+            return cmsAccount;
+        } catch (Exception e) {
+            throw new LoginException("buildCMSAccount parse Error!");
+        }
     }
     //parse từ String htmlResp sang Array Course, 
 
@@ -127,7 +130,7 @@ public class CMSLogin {
             int indexEnd = matcher.group().indexOf(";");
             return matcher.group().substring(indexStart + 1, indexEnd);
         }
-        throw new LoginException("CRSFToken from cookie is null!");
+        throw new LoginException("Regex 'csrftoken=(.+?);' is null!");
     }
 
 }

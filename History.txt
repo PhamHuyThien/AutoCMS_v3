@@ -1,4 +1,8 @@
-v3.3.3
+V3.2.6
+thêm thống kê sử dụng
+fix lỗi đăng nhập cookie sai mà không thông báo đăng nhập thất bại
+
+v3.2.3
 fix lỗi không hiển thị tên quiz
 
 v3.2.2
