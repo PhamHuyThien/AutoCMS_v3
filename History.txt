@@ -1,3 +1,7 @@
+V3.2.7
+sửa lại thống kê sử dụng
+update server ( thêm xem thống kê trên server)
+
 V3.2.6
 thêm thống kê sử dụng
 fix lỗi đăng nhập cookie sai mà không thông báo đăng nhập thất bại

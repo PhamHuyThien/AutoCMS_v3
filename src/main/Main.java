@@ -23,7 +23,7 @@ public class Main {
     public static Quiz[] quiz;
 
     public static final String APP_NAME = "FPL@utoCMS";
-    public static final String APP_VER = "3.2.6";
+    public static final String APP_VER = "3.2.7";
     public static final String APP_SLOGAN = "10 Quiz 10 Point Easy!";
     public static final String APP_AUTHOR = "ThienDepZaii";
     public static final String APP_NICKNAME = "SystemError";

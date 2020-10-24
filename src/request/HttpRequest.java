@@ -30,8 +30,10 @@ public class HttpRequest {
     private static int HTTPREQUEST_TIMEOUT = 300000;
     private static int HTTPREQUEST_READTIMEOUT = 300000;
 
-    protected boolean isConnected = false;
-
+    private boolean isConnected = false;
+    private int httpRequestResponseCode;
+    private String httpRequestResponseMessage;
+    
     public HttpRequest(String url) {
         this.url = url;
     }
@@ -115,16 +117,18 @@ public class HttpRequest {
         }
 
         httpUrlConnection.connect();
+        httpRequestResponseCode = httpUrlConnection.getResponseCode();
+        httpRequestResponseMessage = httpUrlConnection.getResponseMessage();
     }
 
     public int getResponseStatus() throws IOException {
         connect();
-        return httpUrlConnection.getResponseCode();
+        return httpRequestResponseCode;
     }
 
     public String getResponseMessage() throws IOException {
         connect();
-        return httpUrlConnection.getResponseMessage();
+        return httpRequestResponseMessage;
     }
 
     public String getResponseHTML() throws IOException {

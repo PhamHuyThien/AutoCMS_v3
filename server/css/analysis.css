@@ -1,0 +1,30 @@
+.analysis{
+	padding: 10px;
+	background: #d1f9f9;
+}
+.analysis-body{
+	display: grid;
+grid-template-columns: 30% 30% 40%; 
+}
+.analysis-left{
+	text-align: center;
+}
+.analysis__avt{
+	width: 220px;
+	border-radius: 100%;
+	border: 1px #000 solid;
+}
+.analysis-item{
+	/*padding: 10px;*/
+}
+.analysis__title{
+	display: block;
+	margin: 20px 0;
+}
+.analysis__value{
+	display: block;
+	margin: 23px 0;
+}
+.h4{
+	font-size: 15px;
+}

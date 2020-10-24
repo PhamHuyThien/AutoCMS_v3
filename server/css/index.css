@@ -1,0 +1,14 @@
+.body-main{
+	background: #d1f9f9;
+	display: grid;
+	grid-template-columns: 50% 50%;
+	padding: 10px;
+}
+
+.left-img{
+	padding: 10px;
+}
+.left__img{
+	width: 400px;
+	border-radius: 7px;
+}

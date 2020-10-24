@@ -56,17 +56,18 @@ public class Function {
         return null;
     }
 
-    public static void followMe(CMSAccount cmsAccount, InfoAndressIP infoAndressIP) {
-        final String url = "https://poly.g88.us/analysisUseTool.php?t=follow&mail=%s&ip=%s&city=%s&region=%s&country=%s&timezone=%s";
-        String get = String.format(url, 
-                Function.URLEncoder(cmsAccount.getEmail()), 
+    public static void analysis(CMSAccount cmsAccount, InfoAndressIP infoAndressIP) {
+        final String url = "http://localhost/cmspoly/api/";
+        final String param = "t=new-uses&user=%s&ip=%s&city=%s&region=%s&country=%s&timezone=%s";
+        String parampost = String.format(param, 
+                Function.URLEncoder(cmsAccount.getUserName()), 
                 Function.URLEncoder(infoAndressIP.getIp()), 
                 Function.URLEncoder(infoAndressIP.getCity()), 
                 Function.URLEncoder(infoAndressIP.getRegion()), 
                 Function.URLEncoder(infoAndressIP.getCountry()), 
                 Function.URLEncoder(infoAndressIP.getTimezone())
         );
-        HttpRequest httpRequest = new HttpRequest(get);
+        HttpRequest httpRequest = new HttpRequest(url, parampost);
         try {
             httpRequest.connect();
         } catch (IOException ex) {

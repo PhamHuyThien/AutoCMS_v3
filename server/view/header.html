@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FPLAutoCMS - 10Quiz 10Point Easy!</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/all.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/analysis.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-top">
+            <div class="header-logo">
+                <img class="header__logo" src="img/logo.png">
+                </img>
+            </div>
+        </div>
+        <div class="header-menu">
+            <ul>
+                <li class="header__item"><a class="header__link" href="?t=index">Trang chủ</a></li>
+                <li class="header__item"><a class="header__link" href="?t=analysis">Thống kê</a></li>
+                <li class="header__item"><a class="header__link" href="https://www.facebook.com/ThienDz.SystemError/posts/210874576940463" target="_blank">Hướng Dẫn</a></li>
+                <li class="header__item"><a class="header__link" href="https://www.facebook.com/ThienDz.SystemError/posts/210874576940463" target="_blank">Tải về</a></li>
+                <li class="header__item"><a class="header__link" href="https://www.facebook.com/ThienDz.SystemError" target="_blank">Liên hệ</a></li>
+            </ul>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var a = document.getElementsByTagName("a");
+    var search = location.search;
+    if (search == "") {
+        a[0].parentNode.setAttribute("class", "header__item header__item-hover");
+    } else {
+        for (var i = 0; i < a.length; i++) {
+            if (a[i].getAttribute("href").indexOf(search) != -1) {
+                a[i].parentNode.setAttribute("class", "header__item header__item-hover");
+                break;
+            }
+        }
+    }
+    </script>
+    <!-- =================================================================================================== -->
