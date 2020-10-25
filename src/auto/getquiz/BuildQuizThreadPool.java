@@ -7,7 +7,7 @@ package auto.getquiz;
 
 import auto.getquiz.Exception.BuildQuizException;
 import java.io.IOException;
-import object.cms.CMSAccount;
+import model.Account;
 
 
 /**
@@ -16,41 +16,19 @@ import object.cms.CMSAccount;
  */
 public class BuildQuizThreadPool implements Runnable {
 
-    private CMSAccount cmsAccount;
+    private Account cmsAccount;
     private String url;
     private CMSGetQuiz cmsQuizGet;
-
+    private boolean status;
+    
     public BuildQuizThreadPool() {
     }
 
-    public BuildQuizThreadPool(CMSAccount cmsAccount, String url, CMSGetQuiz cmsQuizGet) {
+    public BuildQuizThreadPool(Account cmsAccount, String url, boolean status, CMSGetQuiz cmsQuizGet) {
         this.cmsAccount = cmsAccount;
         this.url = url;
         this.cmsQuizGet = cmsQuizGet;
-    }
-
-    public CMSAccount getCmsAccount() {
-        return cmsAccount;
-    }
-
-    public void setCmsAccount(CMSAccount cmsAccount) {
-        this.cmsAccount = cmsAccount;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public CMSGetQuiz getCmsQuizGet() {
-        return cmsQuizGet;
-    }
-
-    public void setCmsQuizGet(CMSGetQuiz cmsQuizGet) {
-        this.cmsQuizGet = cmsQuizGet;
+        this.status = status;
     }
 
     @Override
@@ -58,7 +36,7 @@ public class BuildQuizThreadPool implements Runnable {
         BuildQuiz buildQuiz = new BuildQuiz();
         buildQuiz.setCmsAccount(cmsAccount);
         buildQuiz.setUrl(url);
-        buildQuiz.setGetStatus(true);
+        buildQuiz.setGetStatus(status);
         try {
             buildQuiz.build();
             cmsQuizGet.hashsetQuiz.add(buildQuiz.getQuiz());

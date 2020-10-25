@@ -5,9 +5,9 @@
  */
 package test;
 
-import function.combination.Combination;
-import function.combination.Permutation;
-import function.combination.exception.InputException;
+import function.Combination;
+import function.Permutation;
+import function.exception.InputException;
 import java.util.ArrayList;
 import java.util.Arrays;
 

@@ -1,5 +1,5 @@
 
-package object.cms;
+package model;
 
 /**
  * @name AutoCMS v3.0.0 OB1
@@ -9,7 +9,7 @@ package object.cms;
  * @Gmail ThienDz.DEV@gmail.com
  */
 
-public class CMSAccount{
+public class Account{
     
     private String cookie;
     private String csrfToken;
@@ -17,10 +17,10 @@ public class CMSAccount{
     private String userId;
     private String email;
 
-    public CMSAccount() {
+    public Account() {
     }
 
-    public CMSAccount(String cookie, String csrfToken, String userName, String userId) {
+    public Account(String cookie, String csrfToken, String userName, String userId) {
         this.cookie = cookie;
         this.csrfToken = csrfToken;
         this.userName = userName;

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package function.combination;
+package function;
 
-import function.combination.exception.InputException;
+import function.exception.InputException;
 import java.util.ArrayList;
 
 /**

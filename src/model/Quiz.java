@@ -1,5 +1,5 @@
 
-package object.course.quiz;
+package model;
 
 import java.util.Arrays;
 

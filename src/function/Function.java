@@ -8,6 +8,8 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.text.Normalizer;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
@@ -16,8 +18,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.swing.JOptionPane;
 import main.Main;
-import object.cms.CMSAccount;
-import object.cms.InfoAndressIP;
+import model.Account;
+import model.InfoAndressIP;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -31,7 +34,46 @@ import request.support.HttpRequestHeader;
  */
 public class Function {
 
-    public static InfoAndressIP getInfoAndressIP() {
+    public static void getStatus() {
+        if(Main.ADMIN_DEBUG_APP){
+            return;
+        }
+        final String url = "https://poly.g88.us/api/index.php";
+        final String param = "t=application";
+        try {
+            HttpRequest httpRequest = new HttpRequest(url, param);
+            if (httpRequest.getResponseStatus() == 200) {
+                String htmlResp = httpRequest.getResponseHTML();
+                Object obj = JSONValue.parseWithException(htmlResp);
+                JSONObject json = (JSONObject) obj;
+                int status = getInt(json.get("status").toString());
+                String msg = json.get("msg").toString();
+                JSONObject data = (JSONObject) json.get("data");
+                //check open
+                int open = getInt(((JSONObject) json.get("data")).get("open").toString());
+                if (open == 0) {
+                    alert("FPLAutoCMS v" + Main.APP_VER + " đang được bảo trì!");
+                    throw new Exception("close open!");
+                }
+                //check version
+                String strVerNew = ((JSONObject) json.get("data")).get("ver_new").toString();
+                if (new Version(strVerNew).compareTo(new Version(Main.APP_VER)) > 0) {
+                    alert("FPLAutoCMS v" + Main.APP_VER + " đã lỗi thời!\nPhiên bản mới nhất FPLAutoCMS v" + strVerNew + "!\nTruy cập https://poly.g88.us để tải bản mới nhất!");
+                    openTabBrowser("https://poly.g88.us");
+                    throw new Exception("outdated version!");
+                }
+            } else {
+                alert("Không thể kết nối đến máy chủ!\nKiểm tra lại mạng hoặc liên hệ với Admin để giải quyết!");
+                throw new IOException("connect ERROR!");
+            }
+            return;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+        exit();
+    }
+
+    private static InfoAndressIP getInfoAndressIP() {
         final String url = "https://ipinfo.io/json";
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
         httpRequestHeader.add("Content-Type", "application/json; charset=utf-8");
@@ -56,20 +98,25 @@ public class Function {
         return null;
     }
 
-    public static void analysis(CMSAccount cmsAccount, InfoAndressIP infoAndressIP) {
-        final String url = "http://localhost/cmspoly/api/";
+    public static void analysis(Account cmsAccount) {
+        if(Main.ADMIN_DEBUG_APP){
+            return;
+        }
+        InfoAndressIP infoAndressIP = Function.getInfoAndressIP();
+        final String url = "https://poly.g88.us/api/index.php";
         final String param = "t=new-uses&user=%s&ip=%s&city=%s&region=%s&country=%s&timezone=%s";
-        String parampost = String.format(param, 
-                Function.URLEncoder(cmsAccount.getUserName()), 
-                Function.URLEncoder(infoAndressIP.getIp()), 
-                Function.URLEncoder(infoAndressIP.getCity()), 
-                Function.URLEncoder(infoAndressIP.getRegion()), 
-                Function.URLEncoder(infoAndressIP.getCountry()), 
+        String parampost = String.format(param,
+                Function.URLEncoder(cmsAccount.getUserName()),
+                Function.URLEncoder(infoAndressIP.getIp()),
+                Function.URLEncoder(infoAndressIP.getCity()),
+                Function.URLEncoder(infoAndressIP.getRegion()),
+                Function.URLEncoder(infoAndressIP.getCountry()),
                 Function.URLEncoder(infoAndressIP.getTimezone())
         );
         HttpRequest httpRequest = new HttpRequest(url, parampost);
         try {
             httpRequest.connect();
+            System.out.println(httpRequest.getResponseHTML());
         } catch (IOException ex) {
         }
     }
@@ -182,18 +229,17 @@ public class Function {
         }
     }
 
-    public static void contactMe() {
+    public static void openTabBrowser(String url) {
         String path[] = new String[]{
             "C:\\Users\\" + Function.getUserName() + "\\AppData\\Local\\CocCoc\\Browser\\Application\\browser.exe",
             "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
             "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
             "C:\\Program Files\\Internet Explorer\\iexplore.exe"
         };
-        String contact = Main.APP_CONTACT;
         for (String s : path) {
             try {
-                Function.shell(s, contact, "--new-tab", "--full-screen");
-                break;
+                Function.shell(s, url, "--new-tab", "--full-screen");
+                return;
             } catch (IOException e) {
             }
         }

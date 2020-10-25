@@ -13,8 +13,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import object.cms.CMSAccount;
-import object.course.Course;
+import model.Account;
+import model.Course;
 import org.json.simple.parser.ParseException;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
@@ -30,7 +30,7 @@ public class CMSLogin {
 
     private String cookie;
 
-    private CMSAccount cmsAccount;
+    private Account cmsAccount;
     private Course[] course;
 
     private final String CMS_URL_DASHBOARD = "https://cms.poly.edu.vn/dashboard/";
@@ -53,7 +53,7 @@ public class CMSLogin {
     }
 
     //getter
-    public CMSAccount getCmsAccount() {
+    public Account getCmsAccount() {
         return cmsAccount;
     }
 
@@ -81,7 +81,7 @@ public class CMSLogin {
     }
 
     //get user từ htmlResp
-    private static CMSAccount buildCMSAccount(Document document) throws LoginException {
+    private static Account buildCMSAccount(Document document) throws LoginException {
         //get element
         Element elmUserMetaData = document.selectFirst("script[id='user-metadata']");
         if (elmUserMetaData == null) {
@@ -92,7 +92,7 @@ public class CMSLogin {
             Object jObj = JSONValue.parseWithException(elmUserMetaData.html());
             JSONObject jsonObj = (JSONObject) jObj;
             //build CMSAccount
-            CMSAccount cmsAccount = new CMSAccount();
+            Account cmsAccount = new Account();
             cmsAccount.setUserName(jsonObj.get("username").toString());
             cmsAccount.setUserId(jsonObj.get("user_id").toString());
             return cmsAccount;

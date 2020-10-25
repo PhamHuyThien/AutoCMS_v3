@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import object.cms.CMSAccount;
-import object.course.Course;
-import object.course.quiz.Quiz;
+import model.Account;
+import model.Course;
+import model.Quiz;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,7 +26,7 @@ import request.support.HttpRequestHeader;
  */
 public class CMSGetQuiz {
 
-    private CMSAccount cmsAccount;
+    private Account cmsAccount;
     private Course course;
 
     private String[] allLinkQuizRaw;
@@ -41,11 +41,11 @@ public class CMSGetQuiz {
     public CMSGetQuiz() {
     }
 
-    public CMSAccount getCmsAccount() {
+    public Account getCmsAccount() {
         return cmsAccount;
     }
 
-    public void setCmsAccount(CMSAccount cmsAccount) {
+    public void setCmsAccount(Account cmsAccount) {
         this.cmsAccount = cmsAccount;
     }
 
@@ -86,7 +86,7 @@ public class CMSGetQuiz {
     }
 
     // lấy tất cả link quiz 
-    public static String[] getURLQuizRaw(CMSAccount cmsAccount, Course course) throws IOException, BuildQuizException {
+    public static String[] getURLQuizRaw(Account cmsAccount, Course course) throws IOException, BuildQuizException {
         final String CMS_QUIZ_ALL_LINK = "https://cms.poly.edu.vn/courses/" + course.getId() + "/course";
 
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
@@ -122,7 +122,7 @@ public class CMSGetQuiz {
         );
         //execute
         for (String urlQuiz : allLinkUrlQuiz) {
-            BuildQuizThreadPool checkUrlQuiz = new BuildQuizThreadPool(cmsAccount, urlQuiz, this);
+            BuildQuizThreadPool checkUrlQuiz = new BuildQuizThreadPool(cmsAccount, urlQuiz, true, this);
             threadPoolExecutor.execute(checkUrlQuiz);
             Function.sleep(100);
         }

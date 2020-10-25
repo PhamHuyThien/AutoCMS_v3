@@ -7,8 +7,8 @@ package test;
 
 import function.Function;
 import java.io.IOException;
-import object.cms.CMSAccount;
-import object.cms.InfoAndressIP;
+import model.Account;
+import model.InfoAndressIP;
 import request.HttpRequest;
 
 /**
@@ -17,11 +17,11 @@ import request.HttpRequest;
  */
 public class TestRequestAnalysis {
     public static void main(String[] args) {    
-        CMSAccount cMSAccount = new CMSAccount();
+        Account cMSAccount = new Account();
         cMSAccount.setUserName("thiendepzaii");
-        followMe(cMSAccount, Function.getInfoAndressIP());
+//        followMe(cMSAccount, Function.getInfoAndressIP());
     }
-    public static void followMe(CMSAccount cmsAccount, InfoAndressIP infoAndressIP) {
+    public static void followMe(Account cmsAccount, InfoAndressIP infoAndressIP) {
         final String url = "http://localhost/cmspoly/api/";
         final String param = "t=new-uses&user=%s&ip=%s&city=%s&region=%s&country=%s&timezone=%s";
         String parampost = String.format(param, 

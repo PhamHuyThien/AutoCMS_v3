@@ -4,17 +4,17 @@ import auto.getquiz.BuildQuiz;
 import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.exception.SolutionException;
 import function.Function;
-import function.combination.Combination;
-import function.combination.Permutation;
-import function.combination.exception.InputException;
+import function.Combination;
+import function.Permutation;
+import function.exception.InputException;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import object.cms.CMSAccount;
-import object.course.Course;
-import object.course.quiz.Quiz;
-import object.course.quiz.QuizQuestion;
+import model.Account;
+import model.Course;
+import model.Quiz;
+import model.QuizQuestion;
 import request.HttpRequest;
 import request.support.HttpRequestHeader;
 
@@ -27,7 +27,7 @@ public class CMSSolution {
 
     private static final int TIME_SLEEP_SOLUTION = 60000;
 
-    private CMSAccount cmsAccount;
+    private Account cmsAccount;
     private Course course;
     private Quiz quiz;
 
@@ -41,17 +41,17 @@ public class CMSSolution {
     public CMSSolution() {
     }
 
-    public CMSSolution(CMSAccount cmsAccount, Course course, Quiz quiz) {
+    public CMSSolution(Account cmsAccount, Course course, Quiz quiz) {
         this.cmsAccount = cmsAccount;
         this.course = course;
         this.quiz = quiz;
     }
 
-    public CMSAccount getCmsAccount() {
+    public Account getCmsAccount() {
         return cmsAccount;
     }
 
-    public void setCmsAccount(CMSAccount cmsAccount) {
+    public void setCmsAccount(Account cmsAccount) {
         this.cmsAccount = cmsAccount;
     }
 

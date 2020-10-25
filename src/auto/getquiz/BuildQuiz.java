@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import object.cms.CMSAccount;
-import object.course.quiz.Quiz;
-import object.course.quiz.QuizQuestion;
+import model.Account;
+import model.Quiz;
+import model.QuizQuestion;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.jsoup.Jsoup;
@@ -29,7 +29,7 @@ import request.support.HttpRequestHeader;
  */
 public class BuildQuiz {
 
-    private CMSAccount cmsAccount;
+    private Account cmsAccount;
     private String url;
     private String htmlResponse;
     private boolean getStatus;
@@ -41,7 +41,7 @@ public class BuildQuiz {
     public BuildQuiz() {
     }
 
-    public BuildQuiz(CMSAccount cmsAccount, String url, boolean getStatus) {
+    public BuildQuiz(Account cmsAccount, String url, boolean getStatus) {
         this.cmsAccount = cmsAccount;
         this.url = url;
         this.getStatus = getStatus;
@@ -52,11 +52,11 @@ public class BuildQuiz {
         this.getStatus = getStatus;
     }
 
-    public CMSAccount getCmsAccount() {
+    public Account getCmsAccount() {
         return cmsAccount;
     }
 
-    public void setCmsAccount(CMSAccount cmsAccount) {
+    public void setCmsAccount(Account cmsAccount) {
         this.cmsAccount = cmsAccount;
     }
 
@@ -189,7 +189,7 @@ public class BuildQuiz {
             }
             quizQuestion.setAmountInput(-1);
             quizQuestion.setMultiChoice(quizQuestion.getType().equals("checkbox"));
-            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
+            quizQuestion.setCorrect(getSatus && elmWraper.selectFirst("span[class='sr']").text().equals("correct"));
             alQuizQuestions.add(quizQuestion);
         }
         //xử lý kiểu text sau
@@ -208,7 +208,7 @@ public class BuildQuiz {
             }
             quizQuestion.setAmountInput(elmPolyInput.select("input").size());
             quizQuestion.setMultiChoice(quizQuestion.getAmountInput() > 1);
-            quizQuestion.setCorrect(getSatus ? elmWraper.selectFirst("span[class='sr']").text().equals("correct") : false);
+            quizQuestion.setCorrect(getSatus && elmWraper.selectFirst("span[class='sr']").text().equals("correct"));
             alQuizQuestions.add(quizQuestion);
         }
         QuizQuestion[] quizQuestions = new QuizQuestion[alQuizQuestions.size()];

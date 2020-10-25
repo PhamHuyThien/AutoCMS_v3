@@ -1,3 +1,10 @@
+V3.2.8
+thêm điều khiển app(tắt sử dụng các phiên bản cũ, tắt sử dụng khi bảo trì)
+thêm tính năng debug_APP (khong gửi request test lên server) (Main.ADMIN_DEBUG_APP = true)
+fix lỗi tìm không đủ QUiz môn tiếng anh 1.2 (FA2020)
+cập nhật lại model object
+Hiện tên môn thay vì mã môn Select Course
+
 V3.2.7
 sửa lại thống kê sử dụng
 update server ( thêm xem thống kê trên server)

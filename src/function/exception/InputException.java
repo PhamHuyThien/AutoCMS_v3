@@ -3,17 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package test;
-
-import function.Function;
-import java.net.InetAddress;
+package function.exception;
 
 /**
  *
  * @author Administrator
  */
-public class testIP {
-    public static void main(String[] args) {
-        System.out.println(Function.getInfoAndressIP().toString());
+public class InputException extends Exception {
+
+    public InputException(String content) {
+        super(content);
     }
 }

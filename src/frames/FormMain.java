@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import object.course.Course;
-import object.course.quiz.Quiz;
+import model.Course;
+import model.Quiz;
 
 /**
  * @author ThienDepZaii - SystemError
@@ -275,50 +275,50 @@ public class FormMain extends javax.swing.JFrame {
 
     private void btnContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContactActionPerformed
         new Thread(() -> {
-            Function.contactMe();
+            Function.openTabBrowser(Main.APP_CONTACT);
         }).start();
     }//GEN-LAST:event_btnContactActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        String cookie = tfCookie.getText();
+        if (cookie.equals("")) {
+            alertWar("You must enter Cookie!");
+            return;
+        }
         new Thread(() -> {
-            String cookie = tfCookie.getText();
-            if (!cookie.equals("")) {
-                showProcess("Login...");
-                inpSetEnbled(false);
-                Main.cmsLogin = new CMSLogin(cookie);
-                try {
-                    Main.cmsLogin.login();
-                } catch (LoginException ex) {
-                    showProcess("Login Fail!");
-                    tfCookie.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    return;
-                } catch (IOException ex) {
-                    showProcess("Connect Fail!");
-                    tfCookie.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    return;
-                }
-                Main.cmsAccount = Main.cmsLogin.getCmsAccount();
-                Main.course = Main.cmsLogin.getCourse();
-                Function.analysis(Main.cmsAccount, Function.getInfoAndressIP());
-                lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
-                lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
-                cbbCourse.removeAllItems();
-                cbbCourse.addItem("Select Course...");
-                for (Course course : Main.course) {
-                    cbbCourse.addItem(course.getNumber());
-                }
-
-                inpSetEnbled(true);
-                cbbQuiz.setEnabled(false);
-                btnSolution.setEnabled(false);
-                showProcess("Login done!");
-                Function.debug(Main.cmsAccount.toString());
-                Function.debug(Arrays.toString(Main.course));
-            } else {
-                alertWar("You must enter Cookie!");
+            showProcess("Login...");
+            inpSetEnbled(false);
+            Main.cmsLogin = new CMSLogin(cookie);
+            try {
+                Main.cmsLogin.login();
+            } catch (LoginException | IOException ex) {
+                showProcess("Login Fail!");
+                tfCookie.setEnabled(true);
+                btnLogin.setEnabled(true);
+                return;
             }
+            //
+            Main.cmsAccount = Main.cmsLogin.getCmsAccount();
+            Main.course = Main.cmsLogin.getCourse();
+            //
+            Function.analysis(Main.cmsAccount);
+            //
+            lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
+            lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
+            //
+            cbbCourse.removeAllItems();
+            cbbCourse.addItem("Select Course...");
+            for (Course course : Main.course) {
+                cbbCourse.addItem(course.getName());
+            }
+            //
+            inpSetEnbled(true);
+            cbbQuiz.setEnabled(false);
+            btnSolution.setEnabled(false);
+            showProcess("Login done!");
+            //
+            Function.debug(Main.cmsAccount.toString());
+            Function.debug(Arrays.toString(Main.course));
         }).start();
     }//GEN-LAST:event_btnLoginActionPerformed
 
@@ -331,12 +331,14 @@ public class FormMain extends javax.swing.JFrame {
         new Thread(() -> {
             inpSetEnbled(false);
             showProcess("Solving....");
+            //
             int start = id - 1;
             int end = start;
             if (id - 1 == Main.quiz.length) {
                 start = 0;
                 end = id - 2;
             }
+            //
             cmsSolution = new CMSSolution[end - start + 1];
             j = 0;
             for (i = start; i <= end; i++) {
@@ -354,14 +356,16 @@ public class FormMain extends javax.swing.JFrame {
                 }).start();
                 Function.sleep(100);
             }
+            //
             int time = 0;
             do {
                 showProcess(cmsSolution, ++time, false);
                 Function.sleep(1000);
             } while (finish < end - start + 1);
+            //
             showProcess(cmsSolution, time, true);
             inpSetEnbled(true);
-            Function.contactMe();
+            Function.openTabBrowser(Main.APP_CONTACT);
         }).start();
     }//GEN-LAST:event_btnSolutionActionPerformed
 
@@ -375,41 +379,40 @@ public class FormMain extends javax.swing.JFrame {
             CMSGetQuiz cmsQuizGet = new CMSGetQuiz();
             cmsQuizGet.setCmsAccount(Main.cmsAccount);
             cmsQuizGet.setCourse(Main.course[id - 1]);
-
+            //
             try {
                 showProcess("Retrieving subject " + Main.course[id - 1].getNumber() + " data...");
                 cmsQuizGet.getRaw();
                 cmsQuizGet.getStandard();
-
-            } catch (IOException ex) {
+            } catch (BuildQuizException | IOException ex) {
                 showProcess("Get data subject error!");
                 tfCookie.setEnabled(true);
                 btnLogin.setEnabled(true);
                 cbbCourse.setEnabled(true);
                 return;
-            } catch (BuildQuizException ex) {
-                Logger.getLogger(FormMain.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //
             showProcess("Find " + cmsQuizGet.getQuiz().length + " quiz success!");
             cbbQuiz.removeAllItems();
             cbbQuiz.addItem("Select Quiz...");
             for (Quiz quiz : cmsQuizGet.getQuiz()) {
                 cbbQuiz.addItem(quiz.getName());
             }
+            //
             cbbQuiz.addItem("Auto " + cmsQuizGet.getQuiz().length + " quiz");
             cbbQuiz.setSelectedIndex(cbbQuiz.getItemCount() - 1);
-
+            //
             Main.quiz = cmsQuizGet.getQuiz();
+            //
             Function.debug("");
             for (Quiz q : Main.quiz) {
                 Function.debug(q.toString());
             }
             inpSetEnbled(true);
         }).start();
-
     }//GEN-LAST:event_cbbCourseActionPerformed
 
-    public void inpSetEnbled(boolean enbled) {
+    private void inpSetEnbled(boolean enbled) {
         tfCookie.setEnabled(enbled);
         btnLogin.setEnabled(enbled);
         cbbCourse.setEnabled(enbled);
@@ -417,7 +420,7 @@ public class FormMain extends javax.swing.JFrame {
         btnSolution.setEnabled(enbled);
     }
 
-    public void showProcess(CMSSolution[] cmsSolution, int time, boolean finish) {
+    private void showProcess(CMSSolution[] cmsSolution, int time, boolean finish) {
         int len = cmsSolution.length;
         boolean useSharp = false;
         String show = "Solving " + Function.time(time) + (finish ? " - " + cmsSolution.length + " Quiz has been completed!" : "...") + "##";
@@ -450,7 +453,7 @@ public class FormMain extends javax.swing.JFrame {
         showProcess(show);
     }
 
-    public void showProcess(String s) {
+    private void showProcess(String s) {
         String line = ".....................................";
         String br = "<br>";
         String[] splLine = s.split("\\#\\#");
@@ -468,15 +471,15 @@ public class FormMain extends javax.swing.JFrame {
         lbProcess.setText(show);
     }
 
-    public void alertInf(String s) {
+    private void alertInf(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Info!!!", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void alertWar(String s) {
+    private void alertWar(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Warning!!!", JOptionPane.WARNING_MESSAGE);
     }
 
-    public void alertErr(String s) {
+    private void alertErr(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Error!!!", JOptionPane.ERROR_MESSAGE);
     }
 
