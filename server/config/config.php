@@ -8,6 +8,10 @@ $dbuser ="thiendepzaii";
 $dbpass	="thien1107";
 //--------------------------------------------------------//
 
+// $dbhost ="localhost";
+// $dbname ="mfbbuzz_cmspoly";
+// $dbuser ="mfbbuzz_thiendz";
+// $dbpass	="thien1107";
 
 try{
 	$conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);

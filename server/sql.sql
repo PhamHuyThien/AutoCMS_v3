@@ -4,7 +4,7 @@ USE fplautocms_analysis;
 
 CREATE TABLE user(
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	username VARCHAR(100) NOT NULL, 
+	username VARCHAR(100) NOT NULL,
 	ip VARCHAR(20),
 	city VARCHAR(50),
 	region VARCHAR(50),

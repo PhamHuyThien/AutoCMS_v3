@@ -8,6 +8,13 @@
 	$sql_analysisNewUser = "SELECT username, time FROM user ORDER BY time DESC"; // người dùng mới nhất
 	$sql_analysisMostUser = "SELECT username, COUNT(username) AS count FROM user GROUP BY username ORDER BY count DESC LIMIT 1"; //người dùng nhiều nhất
 	$sql_analysisMostRegion = "SELECT region, COUNT(region) AS count, country FROM user GROUP BY region ORDER BY count DESC LIMIT 1"; //thành phố sử dụng nhiều nhất
+	//
+	$sql_allRecord = "SELECT * FROM user";
+
+	function _queryAllRecord(){
+		global $sql_allRecord;
+		return __query_fetchAll($sql_allRecord);
+	}
 
 	function _queryAnalysis(){
 		global $sql_analysisTotalRecord, $sql_analysisTotalUser, $sql_analysisNewUser, $sql_analysisMostUser, $sql_analysisMostRegion;

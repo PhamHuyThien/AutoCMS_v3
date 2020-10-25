@@ -6,6 +6,23 @@
 	$r = array("status" => 0, "msg" => "Command not found!");
 
 	switch($t){
+		case "application":
+		case "get-ver-new":
+		case "get-open":
+			$arrIni = parse_ini_file("../config/setting.ini");
+			if($t=="application"){
+				$r["msg"] = "get setting application ok!";
+				$r["data"] = $arrIni;
+			}else if($t=="get-ver-new"){
+				$r["msg"] = "get version new ok!";
+				$r["data"]["ver_new"] = $arrIni["application"]["ver_new"]; 
+ 			}else if($t=="get-open"){
+ 				$r["msg"] = "get open ok!";
+ 				$r["data"]["open"] = $arrIni["application"]["open"];
+ 			}
+ 			$r["status"] = 1;
+ 			break;
+
 		//==============================================================================
 		case "new-uses":
 			$user = isset($_POST["user"]) ? $_POST["user"] : false;
@@ -28,9 +45,16 @@
 		//==============================================================================
 		case "analysis":
 			$r["status"] = 1;
-			$r["msg"] = "query analysis success";
+			$r["msg"] = "query analysis success!";
 			$r["data"] = _queryAnalysis();
 			break;
+		//==============================================================================
+		case "all-record":
+			$r["status"] = 1;
+			$r["msg"] = "query get all record success!";
+			$r["data"] = _queryAllRecord();
+			break;
+
 	}	
 
 	die(json_encode($r));
