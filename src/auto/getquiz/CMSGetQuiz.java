@@ -2,13 +2,11 @@ package auto.getquiz;
 
 import auto.getquiz.Exception.BuildQuizException;
 import function.Function;
+import function.SimpleThreadPoolExecutor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import model.Account;
 import model.Course;
 import model.Quiz;
@@ -33,7 +31,7 @@ public class CMSGetQuiz {
 
     private Quiz[] quiz;
 
-    public HashSet<Quiz> hashsetQuiz;
+    private HashSet<Quiz> hashsetQuiz;
 
     private boolean useRaw;
     private boolean useStandard;
@@ -59,6 +57,10 @@ public class CMSGetQuiz {
 
     public String[] getAllLinkQuizRaw() {
         return allLinkQuizRaw;
+    }
+
+    public HashSet<Quiz> getHsQuizStandard() {
+        return hashsetQuiz;
     }
 
     public Quiz[] getQuiz() {
@@ -107,29 +109,15 @@ public class CMSGetQuiz {
         return res;
     }
 
+    //lọc các quiz
     private void getUrlQuizStandard(String[] allLinkUrlQuiz) {
-
-        int corePoolSize = allLinkUrlQuiz.length;
-        int maximumPoolSize = allLinkUrlQuiz.length;
-        int queueCapacity = 100;
-        ArrayBlockingQueue arrayBlockingQueue = new ArrayBlockingQueue<>(queueCapacity);
-
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, // Số corePoolSize
-                maximumPoolSize, // số maximumPoolSize
-                10, // thời gian một thread được sống nếu không làm gì
-                TimeUnit.SECONDS,
-                arrayBlockingQueue // Blocking queue để cho request đợi
-        );
-        //execute
-        for (String urlQuiz : allLinkUrlQuiz) {
-            BuildQuizThreadPool checkUrlQuiz = new BuildQuizThreadPool(cmsAccount, urlQuiz, true, this);
-            threadPoolExecutor.execute(checkUrlQuiz);
-            Function.sleep(100);
+        BuildQuizRunnable[] buildQuizThreadPools = new BuildQuizRunnable[allLinkUrlQuiz.length];
+        for (int i = 0; i < buildQuizThreadPools.length; i++) {
+            buildQuizThreadPools[i] = new BuildQuizRunnable(cmsAccount, allLinkUrlQuiz[i], true, this);
         }
-        //shutdown
-        threadPoolExecutor.shutdown();
-        //waiting
-        while (threadPoolExecutor.isTerminating()) {
+        SimpleThreadPoolExecutor simpleThreadPool = new SimpleThreadPoolExecutor(buildQuizThreadPools);
+        simpleThreadPool.execute();
+        while (simpleThreadPool.isTerminating()) {
             Function.sleep(100);
         }
     }

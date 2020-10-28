@@ -2,8 +2,6 @@ package auto.login;
 
 import auto.login.exception.LoginException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
@@ -52,7 +50,6 @@ public class CMSLogin {
         this.cookie = cookie;
     }
 
-    //getter
     public Account getCmsAccount() {
         return cmsAccount;
     }

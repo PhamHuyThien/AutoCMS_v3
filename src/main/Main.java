@@ -13,7 +13,7 @@ import model.Quiz;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Main {
-    public static final boolean ADMIN_DEBUG_APP = false;
+    public static final boolean ADMIN_DEBUG_APP = true;
 
     public static FormMain formMain;
     public static Account cmsAccount;

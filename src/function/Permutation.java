@@ -38,10 +38,6 @@ public class Permutation {
     }
 
     public void build() throws InputException {
-        if (build) {
-            return;
-        }
-        build = !build;
         if (k < 1) {
             throw new InputException("K >= 1!");
         }
@@ -51,6 +47,10 @@ public class Permutation {
         if (k > n) {
             throw new InputException("K <= N!");
         }
+        if (build) {
+            return;
+        }
+        build = !build;
         init();
         for (int i = k; i <= (allResult ? n : k); i++) {
             boolean[] check = createBoolArrayTrue(n);

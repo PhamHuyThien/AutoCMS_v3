@@ -40,10 +40,6 @@ public class Combination {
     }
 
     public void build() throws InputException {
-        if (build) {
-            return;
-        }
-        build = !build;
         if (k < 1) {
             throw new InputException("K >= 1!");
         }
@@ -53,6 +49,10 @@ public class Combination {
         if (k > n) {
             throw new InputException("K <= N!");
         }
+        if (build) {
+            return;
+        }
+        build = !build;
         initCombination();
         for (int i = k; i <= (allResult ? n : k); i++) {
             int arrTmp[] = createTmpArrCombination(i + 1);

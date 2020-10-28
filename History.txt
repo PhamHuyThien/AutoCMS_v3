@@ -1,3 +1,6 @@
+V3.2.8.1
+update full source code
+
 V3.2.8
 thêm điều khiển app(tắt sử dụng các phiên bản cũ, tắt sử dụng khi bảo trì)
 thêm tính năng debug_APP (khong gửi request test lên server) (Main.ADMIN_DEBUG_APP = true)

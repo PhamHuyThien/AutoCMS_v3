@@ -2,16 +2,14 @@ package frames;
 
 import auto.getquiz.CMSGetQuiz;
 import auto.getquiz.Exception.BuildQuizException;
-import auto.solution.CMSSolution;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
-import auto.solution.exception.SolutionException;
+import auto.solution.SolutionRunnable;
 import main.Main;
 import function.Function;
+import function.SimpleThreadPoolExecutor;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import model.Course;
 import model.Quiz;
@@ -22,11 +20,6 @@ import model.Quiz;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class FormMain extends javax.swing.JFrame {
-
-    private int i, j;
-    private int index;
-    private CMSSolution cmsSolution[];
-    private int finish;
 
     public FormMain() {
         initComponents();
@@ -339,31 +332,21 @@ public class FormMain extends javax.swing.JFrame {
                 end = id - 2;
             }
             //
-            cmsSolution = new CMSSolution[end - start + 1];
-            j = 0;
-            for (i = start; i <= end; i++) {
-                new Thread(() -> {
-                    cmsSolution[j] = new CMSSolution();
-                    cmsSolution[j].setCmsAccount(Main.cmsAccount);
-                    cmsSolution[j].setCourse(Main.course[cbbCourse.getSelectedIndex() - 1]);
-                    cmsSolution[j].setQuiz(Main.quiz[i]);
-                    try {
-                        cmsSolution[j++].solution();
-                    } catch (SolutionException e) {
-                        Function.debug(e.toString());
-                    }
-                    finish++;
-                }).start();
-                Function.sleep(100);
+            SolutionRunnable[] solutionThreadPools = new SolutionRunnable[end - start + 1];
+            int j=0;
+            for (int i = start; i <= end; i++) {
+                solutionThreadPools[j++] = new SolutionRunnable(Main.cmsAccount, Main.course[cbbCourse.getSelectedIndex() - 1], Main.quiz[i]);
             }
+            SimpleThreadPoolExecutor simpleThreadPool = new SimpleThreadPoolExecutor(solutionThreadPools);
+            simpleThreadPool.execute();
             //
             int time = 0;
             do {
-                showProcess(cmsSolution, ++time, false);
+                showProcess(solutionThreadPools, ++time, false);
                 Function.sleep(1000);
-            } while (finish < end - start + 1);
+            } while (simpleThreadPool.isTerminating());
             //
-            showProcess(cmsSolution, time, true);
+            showProcess(solutionThreadPools, time, true);
             inpSetEnbled(true);
             Function.openTabBrowser(Main.APP_CONTACT);
         }).start();
@@ -420,15 +403,15 @@ public class FormMain extends javax.swing.JFrame {
         btnSolution.setEnabled(enbled);
     }
 
-    private void showProcess(CMSSolution[] cmsSolution, int time, boolean finish) {
-        int len = cmsSolution.length;
+    private void showProcess(SolutionRunnable[] solutionThreadPools, int time, boolean finish) {
+        int len = solutionThreadPools.length;
         boolean useSharp = false;
-        String show = "Solving " + Function.time(time) + (finish ? " - " + cmsSolution.length + " Quiz has been completed!" : "...") + "##";
+        String show = "Solving " + Function.time(time) + (finish ? " - " + len + " Quiz has been completed!" : "...") + "##";
         for (int i = 0; i < len; i++) {
-            int quiz = Function.getInt(cmsSolution[i].getQuiz().getName());
-            String name = cmsSolution != null ? quiz != -1 ? quiz + ":" : "FT:" : "";
-            String score = name + (cmsSolution != null ? Function.roundReal(cmsSolution[i].getScorePresent(), 1) + ":" : "0:");
-            switch (cmsSolution[i].getStatus()) {
+            int quiz = Function.getInt(solutionThreadPools[i].getQuiz().getName());
+            String name = solutionThreadPools != null ? quiz != -1 ? quiz + ":" : "FT:" : "";
+            String score = name + (solutionThreadPools != null ? Function.roundReal(solutionThreadPools[i].getScorePresent(), 1) + ":" : "0:");
+            switch (solutionThreadPools[i].getStatus()) {
                 case -1:
                     score += "! - ";
                     break;
