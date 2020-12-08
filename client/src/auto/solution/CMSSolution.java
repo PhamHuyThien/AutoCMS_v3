@@ -83,8 +83,8 @@ public class CMSSolution {
         if (isUsing) {
             return;
         }
-        status = 2;
         isUsing = !isUsing;
+        status = 2;
         scorePresent = quiz.getScore();
         //đã đủ điểm
         if (quiz.getScore() == quiz.getScorePossible() || isDoneQuiz(quiz)) {

@@ -9,6 +9,7 @@
 		case "application":
 		case "get-ver-new":
 		case "get-open":
+		case "get-title":
 			$arrIni = parse_ini_file("../config/setting.ini");
 			if($t=="application"){
 				$r["msg"] = "get setting application ok!";
@@ -19,7 +20,10 @@
  			}else if($t=="get-open"){
  				$r["msg"] = "get open ok!";
  				$r["data"]["open"] = $arrIni["application"]["open"];
- 			}
+ 			}else if($t=="get-title"){
+				$r["msg"] = "get title ok!";
+				$r["data"]["title"] = $arrIni["application"]["title"];
+			}
  			$r["status"] = 1;
  			break;
 

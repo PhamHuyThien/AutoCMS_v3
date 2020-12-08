@@ -5,6 +5,8 @@
  */
 package function;
 
+import java.util.Objects;
+
 public class Version implements Comparable<Version> {
 
     private String version;
@@ -58,6 +60,13 @@ public class Version implements Comparable<Version> {
             return false;
         }
         return this.compareTo((Version) that) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + Objects.hashCode(this.version);
+        return hash;
     }
 
 }

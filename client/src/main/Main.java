@@ -2,6 +2,7 @@ package main;
 
 import auto.login.CMSLogin;
 import frames.FormMain;
+import function.Client;
 import function.Function;
 import model.Account;
 import model.Course;
@@ -26,13 +27,13 @@ public class Main {
         formMain = new FormMain();
         formMain.setVisible(true);
 
-        Function.getStatus(); //kiểm tra hệ thống
+        Client.check();//kiểm tra hệ thống
         Function.fixHTTPS(); // fix lỗi chứng chỉ
     }
     public static final String APP_NAME = "FPL@utoCMS";
-    public static final String APP_VER = "3.2.8";
+    public static final String APP_VER = "3.2.8.2";
     public static final String APP_SLOGAN = "10 Quiz 10 Point Easy!";
-    public static final String APP_AUTHOR = "ThienDepZaii";
+    public static final String APP_AUTHOR = "ThienDZaii";
     public static final String APP_NICKNAME = "SystemError";
     public static final String APP_CONTACT = "https://fb.com/ThienDz.SystemError";
 }

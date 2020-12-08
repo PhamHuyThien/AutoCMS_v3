@@ -17,9 +17,6 @@ import model.Quiz;
  */
 public class SolutionRunnable extends CMSSolution implements Runnable {
 
-    public SolutionRunnable() {
-    }
-
     public SolutionRunnable(Account cmsAccount, Course course, Quiz quiz) {
         super(cmsAccount, course, quiz);
     }

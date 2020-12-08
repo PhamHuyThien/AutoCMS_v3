@@ -33,7 +33,7 @@ public class HttpRequest {
     private boolean isConnected = false;
     private int httpRequestResponseCode;
     private String httpRequestResponseMessage;
-    
+
     public HttpRequest(String url) {
         this.url = url;
     }
@@ -85,14 +85,7 @@ public class HttpRequest {
         isConnected = !isConnected;
         init();
         _url = new URL(url);
-        /*
-                sử dụng proxy có proxyAuth => chạy full HTTPS và HTTP
-                sử dụng proxy ko có proxyAuth => HTTPS có web chạy được có web không, HTTP bình thường
-                không sử dụng proxy hoạt động bình thường cả HTTP và HTTPS
-         */
-        if (isProxy() && isProxyAuth()) {
-            httpUrlConnection = (HttpURLConnection) new ProxiedHttpsConnection(_url, httpRequestProxy);
-        } else if (getProtocol().equals("https")) {
+        if (getProtocol().equals("https")) {
             httpUrlConnection = (HttpsURLConnection) _url.openConnection(isProxy() ? httpRequestProxy.buildJavaNetProxy() : Proxy.NO_PROXY);
         } else {
             httpUrlConnection = (HttpURLConnection) _url.openConnection(isProxy() ? httpRequestProxy.buildJavaNetProxy() : Proxy.NO_PROXY);
@@ -182,11 +175,11 @@ public class HttpRequest {
         }
         return false;
     }
-    
-    private void init(){
-        if(httpRequestHeader==null){
+
+    private void init() {
+        if (httpRequestHeader == null) {
             httpRequestHeader = new HttpRequestHeader();
         }
     }
-        
+
 }

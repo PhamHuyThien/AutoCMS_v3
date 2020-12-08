@@ -5,6 +5,8 @@ import function.Function;
 import function.SimpleThreadPoolExecutor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import model.Account;
@@ -123,19 +125,15 @@ public class CMSGetQuiz {
     }
 
     private static Quiz[] sortQuiz(HashSet<Quiz> hsQuiz) {
-
-//        Comparator comparator = (Comparator<Quiz>) (Quiz quiz1, Quiz quiz2) -> {
-//            try {
-//                int vtQ1 = Integer.parseInt(quiz1.getName().substring(5).trim());
-//                int vtQ2 = Integer.parseInt(quiz2.getName().substring(5).trim());
-//                return vtQ1 > vtQ2 ? 1 : -1;
-//            } catch (NumberFormatException e) {
-//                return 1;
-//            }
-//        };
+        //sắp xếp
+        Comparator comparator = (Comparator<Quiz>) (Quiz quiz1, Quiz quiz2) -> {
+            int vtQ1 = Function.getInt(quiz1.getName());
+            int vtQ2 = Function.getInt(quiz2.getName());
+            return vtQ1 == -1 || vtQ2 == -1 ? 1 : vtQ1 > vtQ2 ? 1 : -1;
+        };
         List<Quiz> listQuiz = new ArrayList<>(hsQuiz);
-//        Collections.sort(listQuiz, comparator);
-
+        Collections.sort(listQuiz, comparator);
+        //lọc trùng
         List<Quiz> listQuizTmp = new ArrayList<>();
         for (int i = 0; i < listQuiz.size(); i++) {
             int k = -1;
@@ -150,7 +148,7 @@ public class CMSGetQuiz {
             }
         }
         listQuiz = listQuizTmp;
-
+        //đẩy về array thuần
         Quiz quiz[] = new Quiz[listQuiz.size()];
         for (int i = 0; i < listQuiz.size(); i++) {
             quiz[i] = listQuiz.get(i);

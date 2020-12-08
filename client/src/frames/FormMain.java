@@ -5,6 +5,7 @@ import auto.getquiz.Exception.BuildQuizException;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
 import auto.solution.SolutionRunnable;
+import function.Client;
 import main.Main;
 import function.Function;
 import function.SimpleThreadPoolExecutor;
@@ -20,13 +21,13 @@ import model.Quiz;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class FormMain extends javax.swing.JFrame {
-
+    
     public FormMain() {
         initComponents();
         setLocationRelativeTo(null);
         init();
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -109,7 +110,7 @@ public class FormMain extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tfCookie, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tfCookie, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -118,7 +119,7 @@ public class FormMain extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfCookie, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -155,7 +156,7 @@ public class FormMain extends javax.swing.JFrame {
         lbProcess.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         lbProcess.setForeground(new java.awt.Color(0, 153, 0));
         lbProcess.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbProcess.setText("<html><center>.....................................<br>ThienDepZaii is the Best!<br>.....................................<html>");
+        lbProcess.setText("<html>\n<center>.....................................<br>\nThiên Đẹp Traii is the best!\n <br>.....................................<html>");
 
         cbbQuiz.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         cbbQuiz.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Quiz..." }));
@@ -165,29 +166,31 @@ public class FormMain extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lbProcess)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbHello, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbUserId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cbbQuiz, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbbCourse, 0, 154, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbHello, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(lbUserId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbbCourse, 0, 227, Short.MAX_VALUE)
+                            .addComponent(cbbQuiz, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSolution, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(129, 129, 129)))
                 .addContainerGap())
-            .addComponent(lbProcess)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnSolution, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(139, 139, 139))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbHello)
-                    .addComponent(cbbCourse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbbCourse, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbUserId)
@@ -199,7 +202,7 @@ public class FormMain extends javax.swing.JFrame {
                 .addGap(16, 16, 16))
         );
 
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSolution, cbbCourse, cbbQuiz, lbHello, lbUserId});
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnSolution, cbbQuiz, lbHello, lbUserId});
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Contact:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Consolas", 0, 11))); // NOI18N
 
@@ -267,12 +270,22 @@ public class FormMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContactActionPerformed
-        new Thread(() -> {
-            Function.openTabBrowser(Main.APP_CONTACT);
-        }).start();
+        contactButton();
     }//GEN-LAST:event_btnContactActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        loginButton();
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnSolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolutionActionPerformed
+        solutionButton();
+    }//GEN-LAST:event_btnSolutionActionPerformed
+
+    private void cbbCourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbbCourseActionPerformed
+        selectCourseCombobox();
+    }//GEN-LAST:event_cbbCourseActionPerformed
+    
+    private void loginButton() {
         String cookie = tfCookie.getText();
         if (cookie.equals("")) {
             alertWar("You must enter Cookie!");
@@ -294,8 +307,6 @@ public class FormMain extends javax.swing.JFrame {
             Main.cmsAccount = Main.cmsLogin.getCmsAccount();
             Main.course = Main.cmsLogin.getCourse();
             //
-            Function.analysis(Main.cmsAccount);
-            //
             lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
             lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
             //
@@ -310,12 +321,61 @@ public class FormMain extends javax.swing.JFrame {
             btnSolution.setEnabled(false);
             showProcess("Login done!");
             //
+            Client.sendAnalysis(Main.cmsAccount);
             Function.debug(Main.cmsAccount.toString());
             Function.debug(Arrays.toString(Main.course));
         }).start();
-    }//GEN-LAST:event_btnLoginActionPerformed
-
-    private void btnSolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolutionActionPerformed
+    }
+    
+    private void selectCourseCombobox() {
+        int id = cbbCourse.getSelectedIndex();
+        if (id < 1) {
+            return;
+        }
+        inpSetEnbled(false);
+        new Thread(() -> {
+            CMSGetQuiz cmsQuizGet = new CMSGetQuiz();
+            cmsQuizGet.setCmsAccount(Main.cmsAccount);
+            cmsQuizGet.setCourse(Main.course[id - 1]);
+            //
+            try {
+                String courseId = Main.course[id - 1].getNumber();
+                showProcess("Retrieving subject " + courseId + " data...");
+                cmsQuizGet.getRaw();
+                cmsQuizGet.getStandard();
+            } catch (BuildQuizException | IOException ex) {
+                showProcess("Get data subject error!");
+                tfCookie.setEnabled(true);
+                btnLogin.setEnabled(true);
+                cbbCourse.setEnabled(true);
+                return;
+            }
+            //
+            int quizLen = cmsQuizGet.getQuiz().length;
+            showProcess("Find " + quizLen + " quiz success!");
+            cbbQuiz.removeAllItems();
+            cbbQuiz.addItem("Select Quiz...");
+            for (Quiz quiz : cmsQuizGet.getQuiz()) {
+                if (Function.getInt(quiz.getName()) == -1) {
+                    quiz.setName("Final Test");
+                }
+                cbbQuiz.addItem(quiz.getName() + " - " + ((int) quiz.getScore()) + "/" + ((int) quiz.getScorePossible()) + " point");
+            }
+            //
+            cbbQuiz.addItem("Auto all " + quizLen + " quiz");
+            cbbQuiz.setSelectedIndex(cbbQuiz.getItemCount() - 1);
+            //
+            Main.quiz = cmsQuizGet.getQuiz();
+            //
+            Function.debug("");
+            for (Quiz q : Main.quiz) {
+                Function.debug(q.toString());
+            }
+            inpSetEnbled(true);
+        }).start();
+    }
+    
+    private void solutionButton() {
         int id = cbbQuiz.getSelectedIndex();
         if (id < 1) {
             alertErr("You must choose at least 1 quiz!");
@@ -333,7 +393,7 @@ public class FormMain extends javax.swing.JFrame {
             }
             //
             SolutionRunnable[] solutionThreadPools = new SolutionRunnable[end - start + 1];
-            int j=0;
+            int j = 0;
             for (int i = start; i <= end; i++) {
                 solutionThreadPools[j++] = new SolutionRunnable(Main.cmsAccount, Main.course[cbbCourse.getSelectedIndex() - 1], Main.quiz[i]);
             }
@@ -350,51 +410,14 @@ public class FormMain extends javax.swing.JFrame {
             inpSetEnbled(true);
             Function.openTabBrowser(Main.APP_CONTACT);
         }).start();
-    }//GEN-LAST:event_btnSolutionActionPerformed
-
-    private void cbbCourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbbCourseActionPerformed
-        int id = cbbCourse.getSelectedIndex();
-        if (id < 1) {
-            return;
-        }
-        inpSetEnbled(false);
+    }
+    
+    private void contactButton() {
         new Thread(() -> {
-            CMSGetQuiz cmsQuizGet = new CMSGetQuiz();
-            cmsQuizGet.setCmsAccount(Main.cmsAccount);
-            cmsQuizGet.setCourse(Main.course[id - 1]);
-            //
-            try {
-                showProcess("Retrieving subject " + Main.course[id - 1].getNumber() + " data...");
-                cmsQuizGet.getRaw();
-                cmsQuizGet.getStandard();
-            } catch (BuildQuizException | IOException ex) {
-                showProcess("Get data subject error!");
-                tfCookie.setEnabled(true);
-                btnLogin.setEnabled(true);
-                cbbCourse.setEnabled(true);
-                return;
-            }
-            //
-            showProcess("Find " + cmsQuizGet.getQuiz().length + " quiz success!");
-            cbbQuiz.removeAllItems();
-            cbbQuiz.addItem("Select Quiz...");
-            for (Quiz quiz : cmsQuizGet.getQuiz()) {
-                cbbQuiz.addItem(quiz.getName());
-            }
-            //
-            cbbQuiz.addItem("Auto " + cmsQuizGet.getQuiz().length + " quiz");
-            cbbQuiz.setSelectedIndex(cbbQuiz.getItemCount() - 1);
-            //
-            Main.quiz = cmsQuizGet.getQuiz();
-            //
-            Function.debug("");
-            for (Quiz q : Main.quiz) {
-                Function.debug(q.toString());
-            }
-            inpSetEnbled(true);
+            Function.openTabBrowser(Main.APP_CONTACT);
         }).start();
-    }//GEN-LAST:event_cbbCourseActionPerformed
-
+    }
+    
     private void inpSetEnbled(boolean enbled) {
         tfCookie.setEnabled(enbled);
         btnLogin.setEnabled(enbled);
@@ -402,7 +425,7 @@ public class FormMain extends javax.swing.JFrame {
         cbbQuiz.setEnabled(enbled);
         btnSolution.setEnabled(enbled);
     }
-
+    
     private void showProcess(SolutionRunnable[] solutionThreadPools, int time, boolean finish) {
         int len = solutionThreadPools.length;
         boolean useSharp = false;
@@ -435,7 +458,7 @@ public class FormMain extends javax.swing.JFrame {
         show = show.substring(0, show.length() - 3);
         showProcess(show);
     }
-
+    
     private void showProcess(String s) {
         String line = ".....................................";
         String br = "<br>";
@@ -453,23 +476,24 @@ public class FormMain extends javax.swing.JFrame {
         show += "</center></html>";
         lbProcess.setText(show);
     }
-
+    
     private void alertInf(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Info!!!", JOptionPane.INFORMATION_MESSAGE);
     }
-
+    
     private void alertWar(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Warning!!!", JOptionPane.WARNING_MESSAGE);
     }
-
+    
     private void alertErr(String s) {
         JOptionPane.showMessageDialog(this, s, "AutoCMS Error!!!", JOptionPane.ERROR_MESSAGE);
     }
-
+    
     private void init() {
         setTitle(Main.APP_NAME + " v" + Main.APP_VER + " - " + Main.APP_SLOGAN);
         lbTitle.setText(Main.APP_NAME);
         lbSlogan.setText("Version " + Main.APP_VER + " - " + Main.APP_SLOGAN);
+        lbInfo.setText(Main.APP_NAME + " - Code By " + Main.APP_AUTHOR + " - " + Main.APP_NICKNAME);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
