@@ -28,7 +28,7 @@ public class CMSLogin {
 
     private String cookie;
 
-    private Account cmsAccount;
+    private Account account;
     private Course[] course;
 
     private final String CMS_URL_DASHBOARD = "https://cms.poly.edu.vn/dashboard/";
@@ -50,13 +50,15 @@ public class CMSLogin {
         this.cookie = cookie;
     }
 
-    public Account getCmsAccount() {
-        return cmsAccount;
+    public Account getAccount() {
+        return account;
     }
 
-    public Course[] getCourse() {
-        return course;
+    public void setAccount(Account account) {
+        this.account = account;
     }
+
+    
 
     public void login() throws IOException, LoginException {
         if (isLogin) {
@@ -70,15 +72,14 @@ public class CMSLogin {
         //
         Document document = Jsoup.parse(htmlResp);
         //
-        this.cmsAccount = buildCMSAccount(document);
-        this.cmsAccount.setCookie(cookie);
-        this.cmsAccount.setCsrfToken(parseCRSFToken(cookie));
-        //
-        this.course = buildCourse(document);
+        this.account = buildAccount(document);
+        this.account.setCourses(buildCourse(document));
+        this.account.setCookie(cookie);
+        this.account.setCsrfToken(parseCRSFToken(cookie));
     }
 
     //get user từ htmlResp
-    private static Account buildCMSAccount(Document document) throws LoginException {
+    private static Account buildAccount(Document document) throws LoginException {
         //get element
         Element elmUserMetaData = document.selectFirst("script[id='user-metadata']");
         if (elmUserMetaData == null) {

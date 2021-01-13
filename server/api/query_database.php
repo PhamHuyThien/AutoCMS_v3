@@ -10,7 +10,39 @@
 	$sql_analysisMostRegion = "SELECT region, COUNT(region) AS count, country FROM user GROUP BY region ORDER BY count DESC LIMIT 1"; //thành phố sử dụng nhiều nhất
 	//
 	$sql_allRecord = "SELECT * FROM user";
+	//
+	$__sSQLGetCourse = "SELECT * FROM course WHERE id='%s';";
+	$__sSQLAddCourse = "INSERT INTO course VALUES('%s', %d, 1, %d, %d);";
+	$__sSQLUpdateCourse = "UPDATE course SET total_quiz=%d, safety=%d, time_update=%d WHERE id='%s';";
+	
+	function _queryUpdateCourse($__sIdCourse, $__nTotalQuiz){
+		global $__sSQLUpdateCourse;
+		$__sCourses = _queryGetCourse($__sIdCourse);
+		if($__sCourses==false){
+			return false;
+		}
+		$__nServerTotalQuiz = $__sCourses["total_quiz"];
+		if($__nTotalQuiz>=$__nServerTotalQuiz){
+			$__sSQL = sprintf($__sSQLUpdateCourse, $__nTotalQuiz, $__sCourses["safety"]+1, time(), $__sIdCourse);
+			return __query($__sSQL);
+		}
+		return true;
+	}
+	
+	function _queryAddCourse($__sIdCourse, $__nTotalQuiz){
+		global $__sSQLAddCourse;
+		$__nCurrentTime = time();
+		$__sSQL = sprintf($__sSQLAddCourse, $__sIdCourse, $__nTotalQuiz, $__nCurrentTime, $__nCurrentTime);
+		return __query($__sSQL);
+	}
+	
 
+	function _queryGetCourse($__sIdCourse){
+		global $__sSQLGetCourse;
+		$__sSQL = sprintf($__sSQLGetCourse, $__sIdCourse);
+		return __query_fetch($__sSQL);
+	}
+	
 	function _queryAllRecord(){
 		global $sql_allRecord;
 		return __query_fetchAll($sql_allRecord);

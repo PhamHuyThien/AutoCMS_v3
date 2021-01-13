@@ -107,7 +107,7 @@
               <Color blue="cc" green="cc" red="0" type="rgb"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="title"/>
+            <Property name="text" type="java.lang.String" value="FPL@utoCMS"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lbSlogan">
@@ -119,7 +119,7 @@
               <Color blue="ff" green="33" red="0" type="rgb"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="Slogan"/>
+            <Property name="text" type="java.lang.String" value="Version v0.0.0.0 - 10 Quiz 10 Point Easy!"/>
           </Properties>
         </Component>
       </SubComponents>

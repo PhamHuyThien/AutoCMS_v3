@@ -6,6 +6,39 @@
 	$r = array("status" => 0, "msg" => "Command not found!");
 
 	switch($t){
+		case "get-course":
+			$idCourse = isset($_POST["id_course"]) ? $_POST["id_course"] : false;
+			if(_checkMissing(array($idCourse))){
+				if(($data = _queryGetCourse($idCourse))!==false){
+					$r["status"] = 1;
+					$r["msg"] = "Get Course Success!";
+					$r["data"] = $data;
+				}else{
+					$r["msg"] = "Get Course Fail!";
+				}
+			}else{
+				$r["msg"] = "Missing parameter!";
+			}
+			break;
+		case "add-course":
+			$idCourse = isset($_POST["id_course"]) ? $_POST["id_course"] : false;
+			$totalQuiz = isset($_POST["total_quiz"]) ? $_POST["total_quiz"] : false;
+			if(_checkMissing(array($idCourse, $totalQuiz))){
+				if(_queryUpdateCourse($idCourse, $totalQuiz)===false){
+					if(_queryAddCourse($idCourse, $totalQuiz)){
+						$r["status"] = 1; 
+						$r["msg"] = "Add Course Success!";
+					}else{
+						$r["msg"] = "Add Course Fail!";
+					}
+				}else{
+					$r["status"] = 1; 
+					$r["msg"] = "Update Course Success!";
+				}
+			}else{
+				$r["msg"] = "Missing parameter!";
+			}
+			break;
 		case "application":
 		case "get-ver-new":
 		case "get-open":

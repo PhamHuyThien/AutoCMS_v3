@@ -1,12 +1,9 @@
 package main;
 
-import auto.login.CMSLogin;
 import frames.FormMain;
-import function.Client;
-import function.Function;
 import model.Account;
-import model.Course;
-import model.Quiz;
+import util.Client;
+import util.OS;
 
 /**
  * @author ThienDepZaii - SystemError
@@ -14,24 +11,24 @@ import model.Quiz;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class Main {
-    public static final boolean ADMIN_DEBUG_APP = true;
 
-    public static FormMain formMain;
-    public static Account cmsAccount;
-    public static CMSLogin cmsLogin;
-    public static Course[] course;
-    public static Quiz[] quiz;
+    public static final boolean ADMIN_DEBUG_APP = true;
+    public static final int ADMIN_QUIZ_SAFETY = 3;
     
+    public static FormMain formMain;
+    public static Account account;
+
     public static void main(String[] args) {
-        
+
         formMain = new FormMain();
         formMain.setVisible(true);
 
-        Client.check();//kiểm tra hệ thống
-        Function.fixHTTPS(); // fix lỗi chứng chỉ
+        Client.checkApp();//kiểm tra hệ thống
+        OS.fixHTTPS(); // fix lỗi chứng chỉ
     }
+
     public static final String APP_NAME = "FPL@utoCMS";
-    public static final String APP_VER = "3.2.8.2";
+    public static final String APP_VER = "3.2.9";
     public static final String APP_SLOGAN = "10 Quiz 10 Point Easy!";
     public static final String APP_AUTHOR = "ThienDZaii";
     public static final String APP_NICKNAME = "SystemError";

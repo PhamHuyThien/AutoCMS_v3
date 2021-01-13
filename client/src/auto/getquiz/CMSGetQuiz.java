@@ -1,8 +1,8 @@
 package auto.getquiz;
 
 import auto.getquiz.Exception.BuildQuizException;
-import function.Function;
-import function.SimpleThreadPoolExecutor;
+import util.Utilities;
+import util.SimpleThreadPoolExecutor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import request.support.HttpRequestHeader;
  */
 public class CMSGetQuiz {
 
-    private Account cmsAccount;
+    private Account account;
     private Course course;
 
     private String[] allLinkQuizRaw;
@@ -41,13 +41,14 @@ public class CMSGetQuiz {
     public CMSGetQuiz() {
     }
 
-    public Account getCmsAccount() {
-        return cmsAccount;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setCmsAccount(Account cmsAccount) {
-        this.cmsAccount = cmsAccount;
+    public void setAccount(Account account) {
+        this.account = account;
     }
+
 
     public Course getCourse() {
         return course;
@@ -74,7 +75,7 @@ public class CMSGetQuiz {
             return;
         }
         useRaw = !useRaw;
-        allLinkQuizRaw = getURLQuizRaw(cmsAccount, course);
+        allLinkQuizRaw = getURLQuizRaw(account, course);
     }
 
     public void getStandard() throws IOException, BuildQuizException {
@@ -90,11 +91,11 @@ public class CMSGetQuiz {
     }
 
     // lấy tất cả link quiz 
-    public static String[] getURLQuizRaw(Account cmsAccount, Course course) throws IOException, BuildQuizException {
+    public static String[] getURLQuizRaw(Account account, Course course) throws IOException, BuildQuizException {
         final String CMS_QUIZ_ALL_LINK = "https://cms.poly.edu.vn/courses/" + course.getId() + "/course";
 
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader();
-        httpRequestHeader.add("cookie", cmsAccount.getCookie());
+        httpRequestHeader.add("cookie", account.getCookie());
         HttpRequest httpRequest = new HttpRequest(CMS_QUIZ_ALL_LINK, httpRequestHeader);
         String htmlResp = httpRequest.getResponseHTML();
         //
@@ -115,20 +116,20 @@ public class CMSGetQuiz {
     private void getUrlQuizStandard(String[] allLinkUrlQuiz) {
         BuildQuizRunnable[] buildQuizThreadPools = new BuildQuizRunnable[allLinkUrlQuiz.length];
         for (int i = 0; i < buildQuizThreadPools.length; i++) {
-            buildQuizThreadPools[i] = new BuildQuizRunnable(cmsAccount, allLinkUrlQuiz[i], true, this);
+            buildQuizThreadPools[i] = new BuildQuizRunnable(account, allLinkUrlQuiz[i], true, this);
         }
         SimpleThreadPoolExecutor simpleThreadPool = new SimpleThreadPoolExecutor(buildQuizThreadPools);
         simpleThreadPool.execute();
         while (simpleThreadPool.isTerminating()) {
-            Function.sleep(100);
+            Utilities.sleep(100);
         }
     }
 
     private static Quiz[] sortQuiz(HashSet<Quiz> hsQuiz) {
         //sắp xếp
         Comparator comparator = (Comparator<Quiz>) (Quiz quiz1, Quiz quiz2) -> {
-            int vtQ1 = Function.getInt(quiz1.getName());
-            int vtQ2 = Function.getInt(quiz2.getName());
+            int vtQ1 = Utilities.getInt(quiz1.getName());
+            int vtQ2 = Utilities.getInt(quiz2.getName());
             return vtQ1 == -1 || vtQ2 == -1 ? 1 : vtQ1 > vtQ2 ? 1 : -1;
         };
         List<Quiz> listQuiz = new ArrayList<>(hsQuiz);

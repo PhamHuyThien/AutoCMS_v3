@@ -1,18 +1,31 @@
 # FPL@autoCMS - 10 Quiz 10 Point Easy!
 
 ## Cài đặt
-Cài đặt Môi trường JAVA (Download [JDK 1.8 64b](https://drive.google.com/file/d/1tlgwgwbLNqszE6DUCILPIRqrAaCrPvbe/view))
-Truy cập: [Trung tâm hỗ trợ trên facebook](https://www.facebook.com/ThienDz.SystemError/posts/210874576940463)
-Chọn phiên bản mới nhất và tải về
-mở FPLAutoCMS_v3xx...jar (open with JAVA TM flatform SE binary)...
+- Tổ hợp phím Window+R, nhập "cmd" nhấn ENTER..
+- Trong cửa sổ Command Prompt nhập "java -version"..
+- Hiện "java version xxxxx" nghĩa là đã cài đặt môi trường bỏ qua bước cài đặt tiếp theo
+- Nếu hiện thông báo lỗi vui lòng cài đặt JDK (Download [JDK 1.8 64b](https://drive.google.com/file/d/1tlgwgwbLNqszE6DUCILPIRqrAaCrPvbe/view))
+- Truy cập [Trang chủ Poly Tool](https://poly.g88.us), nhấn tải về...
+- tìm file FPLAutoCMS_v3xx.jar mới nhất và tải về.
+- giải nén tool click FPLAutoCMSV3xx.jar -> open with -> Java(TM) Platform SE binary...
 
 ## Cách sử dụng
-Xem Clip hướng dẫn chi tiết: [Hướng dẫn sử dụng Took FPL@UTOCMS v3 ](https://drive.google.com/file/d/1tlgwgwbLNqszE6DUCILPIRqrAaCrPvbe/view)
+- Xem clip hướng dẫn chi tiết: [Hướng dẫn sử dụng Took FPL@UTOCMS v3 ](https://drive.google.com/file/d/1tlgwgwbLNqszE6DUCILPIRqrAaCrPvbe/view)
 
 ## Lịch sử cập nhật
+
+###v3.2.9
+- Thêm Main.ADMIN_QUIZ_SAFETY đặt độ an toàn số lượng quiz
+- Update lại toàn bộ source code Client
+- Update Server, Request độ tin cậy số lượng quiz mỗi khóa học (Tránh sót quiz không làm vì mạng lag)
+- Update Client, Phát hiện không đủ quiz hoặc số lượng quiz chưa an toàn sẽ thông báo!
+- Thêm số lượng quiz đủ sẵn 6 môn (Eng 1.1, 1.2, tin học, Dự án mẫu JAVA, pháp luật chính trị)
+- Fix lỗi server, [thống kê](https://poly.g88.us/?t=analysis) hiện tháng 0 thay vì tháng 1 
+
 ### v3.2.8.2
 - hiển thị thêm số điểm hiện tại và số điểm cần đạt khi chọn quiz muốn auto
-V3.2.8.1
+
+###V3.2.8.1
 - update full source code
 
 ### V3.2.8

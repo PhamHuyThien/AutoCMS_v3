@@ -1,6 +1,8 @@
 
 package model;
 
+import java.util.Arrays;
+
 /**
  * @name AutoCMS v3.0.0 OB1
  * @created 03/06/2020
@@ -16,16 +18,21 @@ public class Account{
     private String userName;
     private String userId;
     private String email;
-
+    
+    private Course[] courses;
+    
     public Account() {
     }
 
-    public Account(String cookie, String csrfToken, String userName, String userId) {
+    public Account(String cookie, String csrfToken, String userName, String userId, String email, Course[] courses) {
         this.cookie = cookie;
         this.csrfToken = csrfToken;
         this.userName = userName;
         this.userId = userId;
+        this.email = email;
+        this.courses = courses;
     }
+
     
     public String getCookie() {
         return cookie;
@@ -67,9 +74,19 @@ public class Account{
         this.email = email;
     }
 
+    public Course[] getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Course[] courses) {
+        this.courses = courses;
+    }
+
     @Override
     public String toString() {
-        return "CMSAccount{" + "cookie=" + cookie + ", csrfToken=" + csrfToken + ", userName=" + userName + ", userId=" + userId + ", email=" + getEmail() + '}';
+        return "Account{" + "cookie=" + cookie + ", csrfToken=" + csrfToken + ", userName=" + userName + ", userId=" + userId + ", email=" + email + ", courses=" + Arrays.toString(courses) + '}';
     }
+
+    
 
 }

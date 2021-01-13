@@ -3,8 +3,8 @@ session_start();
 date_default_timezone_set("Asia/Ho_Chi_Minh");
 //------------------> config DB <------------------------//
 $dbhost ="localhost";
-$dbname ="fplautocms_analysis";
-$dbuser ="thiendepzaii";
+$dbname ="poly";
+$dbuser ="thiendz";
 $dbpass	="thien1107";
 //--------------------------------------------------------//
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package function;
+package util;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,7 +40,7 @@ public class SimpleThreadPoolExecutor extends ThreadPoolExecutor{
         } else {
             for (Runnable runnable : runnables) {
                 super.execute(runnable);
-                Function.sleep(10);
+                Utilities.sleep(10);
             }
             super.shutdown();
         }

@@ -6,7 +6,7 @@
 package auto.getquiz;
 
 import auto.getquiz.Exception.BuildQuizException;
-import function.Function;
+import util.Console;
 import java.io.IOException;
 import model.Account;
 
@@ -30,7 +30,7 @@ public class BuildQuizRunnable extends BuildQuiz implements Runnable {
             super.build();
             this.cmsGetQuiz.getHsQuizStandard().add(getQuiz());
         } catch (IOException | BuildQuizException ex) {
-            Function.debug("BuildQuizThreadPool->run-> "+ex.toString());
+            Console.debug(BuildQuizRunnable.class, ex);
         }
     }
 

@@ -6,7 +6,7 @@
 package auto.getquiz;
 
 import auto.getquiz.Exception.BuildQuizException;
-import function.Function;
+import util.Utilities;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -233,7 +233,7 @@ public class BuildQuiz {
             Iterator itrValue = ((Map) itrArray.next()).entrySet().iterator();
             while (itrValue.hasNext()) {
                 Map.Entry pair = (Map.Entry) itrValue.next();
-                listValue[i++] = Function.convertVIToEN(pair.getValue().toString());
+                listValue[i++] = Utilities.convertVIToEN(pair.getValue().toString());
             }
         }
         return listValue;

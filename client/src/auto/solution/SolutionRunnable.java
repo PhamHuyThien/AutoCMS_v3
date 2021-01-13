@@ -6,7 +6,8 @@
 package auto.solution;
 
 import auto.solution.exception.SolutionException;
-import function.Function;
+import util.Console;
+import util.Utilities;
 import model.Account;
 import model.Course;
 import model.Quiz;
@@ -28,7 +29,7 @@ public class SolutionRunnable extends CMSSolution implements Runnable {
         try {
             super.solution();
         } catch (SolutionException ex) {
-            Function.debug("BuildQuizThreadPool->run-> " + ex.toString());
+            Console.debug(SolutionRunnable.class, ex);
         }
     }
 

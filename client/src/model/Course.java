@@ -1,6 +1,8 @@
 
 package model;
 
+import java.util.Arrays;
+
 /**
  * @name AutoCMS v3.0.0 OB1
  * @created 03/06/2020
@@ -15,16 +17,19 @@ public class Course {
     private String number;
     private String index;
     private String refurnUrl;
-
+    
+    private Quiz[] quizs;
+    
     public Course() {
     }
 
-    public Course(String name, String id, String number, String index, String refurnUrl) {
+    public Course(String name, String id, String number, String index, String refurnUrl, Quiz[] quizs) {
         this.name = name;
         this.id = id;
         this.number = number;
         this.index = index;
         this.refurnUrl = refurnUrl;
+        this.quizs = quizs;
     }
 
     public String getName() {
@@ -67,11 +72,17 @@ public class Course {
         this.refurnUrl = refurnUrl;
     }
 
+    public Quiz[] getQuizs() {
+        return quizs;
+    }
+
+    public void setQuiz(Quiz[] quizs) {
+        this.quizs = quizs;
+    }
+
     @Override
     public String toString() {
-        return "Course{" + "name=" + name + ", id=" + id + ", number=" + number + ", index=" + index + ", refurnUrl=" + refurnUrl + '}';
+        return "Course{" + "name=" + name + ", id=" + id + ", number=" + number + ", index=" + index + ", refurnUrl=" + refurnUrl + ", quiz=" + Arrays.toString(quizs) + '}';
     }
-    
-    
     
 }

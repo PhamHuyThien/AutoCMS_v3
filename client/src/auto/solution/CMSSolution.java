@@ -3,9 +3,10 @@ package auto.solution;
 import auto.getquiz.BuildQuiz;
 import auto.getquiz.Exception.BuildQuizException;
 import auto.solution.exception.SolutionException;
-import function.Function;
-import function.Combination;
-import function.Permutation;
+import util.Utilities;
+import util.Combination;
+import util.Console;
+import util.Permutation;
 import function.exception.InputException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,26 +97,26 @@ public class CMSSolution {
         double solutionScore = 0;
         long timeTick = 0;
         do {
-            if (Function.getCurrentMilis() - timeTick > 60000) {
+            if (Utilities.getCurrentMilis() - timeTick > 60000) {
                 try {
                     //
                     String jsonResponse = httpRequestSolution(urlPost, buildParamPost());
-                    Function.debug(jsonResponse);
+                    Console.debug(jsonResponse);
                     //
                     Object o = JSONValue.parse(jsonResponse);
                     JSONObject jsonObj = (JSONObject) o;
                     solutionScore = Double.parseDouble(jsonObj.get("current_score").toString());
                     quiz = updateStatusQuizQuestion(jsonObj.get("contents").toString(), quiz);
-                    Function.debug(quiz.toString());
+                    Console.debug(quiz);
                     //
                     scorePresent = solutionScore;
-                    timeTick = Function.getCurrentMilis();
+                    timeTick = Utilities.getCurrentMilis();
                 } catch (Exception e) {
                     status = 0;
                     throw new SolutionException(e.toString());
                 }
             }
-            Function.sleep(100);
+            Utilities.sleep(100);
         } while (!isDoneQuiz(quiz));
         status = 1;
     }
@@ -171,10 +172,10 @@ public class CMSSolution {
             alInt.get(index).forEach((i) -> {
                 if (quizQuestion.getType().equals("text")) {
                     // kiểu text chỉ việc append value1,value2...
-                    value.append(Function.URLEncoder(quizQuestion.getListValue()[i])).append("%2C");
+                    value.append(Utilities.URLEncoder(quizQuestion.getListValue()[i])).append("%2C");
                 } else {
                     // kiểu checkbox => key[]=value1&key[]=value2.....
-                    value.append(Function.URLEncoder(quizQuestion.getKey())).append("=").append(Function.URLEncoder(quizQuestion.getListValue()[i])).append("&");
+                    value.append(Utilities.URLEncoder(quizQuestion.getKey())).append("=").append(Utilities.URLEncoder(quizQuestion.getListValue()[i])).append("&");
                 }
             });
             //xóa kí tự nối cuối và return quizQuestion
@@ -182,7 +183,7 @@ public class CMSSolution {
         } else { // đây là kiểu chọn 1 đáp án
             String choice[] = quizQuestion.getListValue();
             //định dạng: key=value
-            String res = Function.URLEncoder(quizQuestion.getKey()) + "=" + Function.URLEncoder(choice[quizQuestion.getTestCount()]) + "&";
+            String res = Utilities.URLEncoder(quizQuestion.getKey()) + "=" + Utilities.URLEncoder(choice[quizQuestion.getTestCount()]) + "&";
             return makeUpValue(res);
         }
     }

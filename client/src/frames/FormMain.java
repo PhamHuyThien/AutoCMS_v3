@@ -5,15 +5,17 @@ import auto.getquiz.Exception.BuildQuizException;
 import auto.login.CMSLogin;
 import auto.login.exception.LoginException;
 import auto.solution.SolutionRunnable;
-import function.Client;
+import util.Client;
+import util.Console;
 import main.Main;
-import function.Function;
-import function.SimpleThreadPoolExecutor;
+import util.Utilities;
+import util.SimpleThreadPoolExecutor;
 import java.io.IOException;
-import java.util.Arrays;
-import javax.swing.JOptionPane;
 import model.Course;
 import model.Quiz;
+import model.QuizQuestion;
+import util.MsgBox;
+import util.OS;
 
 /**
  * @author ThienDepZaii - SystemError
@@ -21,13 +23,12 @@ import model.Quiz;
  * @Gmail ThienDz.DEV@gmail.com
  */
 public class FormMain extends javax.swing.JFrame {
-    
     public FormMain() {
         initComponents();
         setLocationRelativeTo(null);
         init();
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -58,12 +59,12 @@ public class FormMain extends javax.swing.JFrame {
         lbTitle.setFont(new java.awt.Font("Consolas", 1, 36)); // NOI18N
         lbTitle.setForeground(new java.awt.Color(0, 204, 204));
         lbTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbTitle.setText("title");
+        lbTitle.setText("FPL@utoCMS");
 
         lbSlogan.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         lbSlogan.setForeground(new java.awt.Color(0, 51, 255));
         lbSlogan.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbSlogan.setText("Slogan");
+        lbSlogan.setText("Version v0.0.0.0 - 10 Quiz 10 Point Easy!");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -284,35 +285,37 @@ public class FormMain extends javax.swing.JFrame {
     private void cbbCourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbbCourseActionPerformed
         selectCourseCombobox();
     }//GEN-LAST:event_cbbCourseActionPerformed
-    
+
     private void loginButton() {
-        String cookie = tfCookie.getText();
+        String cookie = tfCookie.getText().trim();
         if (cookie.equals("")) {
-            alertWar("You must enter Cookie!");
+            tfCookie.setText("");
+            MsgBox.alertWar(this, "You must enter Cookie!");
             return;
         }
         new Thread(() -> {
             showProcess("Login...");
             inpSetEnbled(false);
-            Main.cmsLogin = new CMSLogin(cookie);
+            CMSLogin cmsLogin = new CMSLogin(cookie);
             try {
-                Main.cmsLogin.login();
+                cmsLogin.login();
             } catch (LoginException | IOException ex) {
                 showProcess("Login Fail!");
                 tfCookie.setEnabled(true);
+                tfCookie.setText("");
                 btnLogin.setEnabled(true);
                 return;
             }
             //
-            Main.cmsAccount = Main.cmsLogin.getCmsAccount();
-            Main.course = Main.cmsLogin.getCourse();
+            Main.account = cmsLogin.getAccount();
+            Console.debug(Main.account);
             //
-            lbHello.setText("Hello: " + Main.cmsAccount.getUserName().toUpperCase());
-            lbUserId.setText("User ID: " + Main.cmsAccount.getUserId());
+            lbHello.setText("Hello: " + Main.account.getUserName().toUpperCase());
+            lbUserId.setText("User ID: " + Main.account.getUserId());
             //
             cbbCourse.removeAllItems();
             cbbCourse.addItem("Select Course...");
-            for (Course course : Main.course) {
+            for (Course course : Main.account.getCourses()) {
                 cbbCourse.addItem(course.getName());
             }
             //
@@ -321,12 +324,10 @@ public class FormMain extends javax.swing.JFrame {
             btnSolution.setEnabled(false);
             showProcess("Login done!");
             //
-            Client.sendAnalysis(Main.cmsAccount);
-            Function.debug(Main.cmsAccount.toString());
-            Function.debug(Arrays.toString(Main.course));
+            Client.sendAnalysis(Main.account);
         }).start();
     }
-    
+
     private void selectCourseCombobox() {
         int id = cbbCourse.getSelectedIndex();
         if (id < 1) {
@@ -335,11 +336,11 @@ public class FormMain extends javax.swing.JFrame {
         inpSetEnbled(false);
         new Thread(() -> {
             CMSGetQuiz cmsQuizGet = new CMSGetQuiz();
-            cmsQuizGet.setCmsAccount(Main.cmsAccount);
-            cmsQuizGet.setCourse(Main.course[id - 1]);
+            cmsQuizGet.setAccount(Main.account);
+            cmsQuizGet.setCourse(Main.account.getCourses()[id - 1]);
             //
             try {
-                String courseId = Main.course[id - 1].getNumber();
+                String courseId = Main.account.getCourses()[id - 1].getNumber();
                 showProcess("Retrieving subject " + courseId + " data...");
                 cmsQuizGet.getRaw();
                 cmsQuizGet.getStandard();
@@ -356,46 +357,68 @@ public class FormMain extends javax.swing.JFrame {
             cbbQuiz.removeAllItems();
             cbbQuiz.addItem("Select Quiz...");
             for (Quiz quiz : cmsQuizGet.getQuiz()) {
-                if (Function.getInt(quiz.getName()) == -1) {
+                if (Utilities.getInt(quiz.getName()) == -1) {
                     quiz.setName("Final Test");
                 }
                 cbbQuiz.addItem(quiz.getName() + " - " + ((int) quiz.getScore()) + "/" + ((int) quiz.getScorePossible()) + " point");
+                Console.debug(quiz);
             }
             //
             cbbQuiz.addItem("Auto all " + quizLen + " quiz");
             cbbQuiz.setSelectedIndex(cbbQuiz.getItemCount() - 1);
             //
-            Main.quiz = cmsQuizGet.getQuiz();
+            Main.account.getCourses()[id - 1].setQuiz(cmsQuizGet.getQuiz());
             //
-            Function.debug("");
-            for (Quiz q : Main.quiz) {
-                Function.debug(q.toString());
+            Client.sendTotalQuiz(Main.account.getCourses()[id - 1]);
+            //
+            int[] safetyQuiz = Client.getTotalQuiz(Main.account.getCourses()[id - 1]);
+            if (safetyQuiz != null) { //lấy được dữ liệu trên server
+                if (safetyQuiz[1] < Main.ADMIN_QUIZ_SAFETY) { //chưa đủ độ an toàn
+                    inpSetEnbled(true);
+                    MsgBox.alertWar(this, "Số lương quiz môn trên server chưa đủ độ an toàn\nSố lượng quiz tìm thấy có thể bị thiếu do mạng lag...");
+                } else { //đã đủ độ an toàn
+                    //không đủ số lượng quiz
+                    if (Main.account.getCourses()[id - 1].getQuizs().length < safetyQuiz[0]) {
+                        cbbCourse.setSelectedIndex(0);
+                        cbbCourse.setEnabled(true);
+                        MsgBox.alertWar(this, "Không đủ số lượng quiz vui lòng chọn lại môn cần giải bài!");
+                    } else { //đủ số lượng quiz
+                        inpSetEnbled(true);
+                    }
+                }
+            } else {
+                inpSetEnbled(true);
+                MsgBox.alertWar(this, "Không thấy dữ liệu từ server!\nSố lượng quiz tìm thấy có thể bị thiếu do mạng lag...");
             }
-            inpSetEnbled(true);
         }).start();
     }
-    
+
     private void solutionButton() {
-        int id = cbbQuiz.getSelectedIndex();
-        if (id < 1) {
-            alertErr("You must choose at least 1 quiz!");
+        int idCourse = cbbCourse.getSelectedIndex();
+        int idQuiz = cbbQuiz.getSelectedIndex();
+        if (idQuiz < 1) {
+            MsgBox.alertErr(this, "You must choose at least 1 quiz!");
             return;
         }
         new Thread(() -> {
             inpSetEnbled(false);
             showProcess("Solving....");
             //
-            int start = id - 1;
+            int start = idQuiz - 1;
             int end = start;
-            if (id - 1 == Main.quiz.length) {
+            if (idQuiz - 1 == Main.account.getCourses()[idCourse - 1].getQuizs().length) {
                 start = 0;
-                end = id - 2;
+                end = idQuiz - 2;
             }
             //
             SolutionRunnable[] solutionThreadPools = new SolutionRunnable[end - start + 1];
             int j = 0;
             for (int i = start; i <= end; i++) {
-                solutionThreadPools[j++] = new SolutionRunnable(Main.cmsAccount, Main.course[cbbCourse.getSelectedIndex() - 1], Main.quiz[i]);
+                solutionThreadPools[j++] = new SolutionRunnable(
+                        Main.account,
+                        Main.account.getCourses()[idCourse - 1],
+                        Main.account.getCourses()[idCourse - 1].getQuizs()[i]
+                );
             }
             SimpleThreadPoolExecutor simpleThreadPool = new SimpleThreadPoolExecutor(solutionThreadPools);
             simpleThreadPool.execute();
@@ -403,21 +426,35 @@ public class FormMain extends javax.swing.JFrame {
             int time = 0;
             do {
                 showProcess(solutionThreadPools, ++time, false);
-                Function.sleep(1000);
+                Utilities.sleep(1000);
             } while (simpleThreadPool.isTerminating());
             //
             showProcess(solutionThreadPools, time, true);
             inpSetEnbled(true);
-            Function.openTabBrowser(Main.APP_CONTACT);
+            OS.openTabBrowser(Main.APP_CONTACT);
         }).start();
     }
-    
+
     private void contactButton() {
         new Thread(() -> {
-            Function.openTabBrowser(Main.APP_CONTACT);
+            OS.openTabBrowser(Main.APP_CONTACT);
         }).start();
     }
-    
+
+    private String buildNameQuizQuestion(Quiz quiz) {
+//                cbbQuiz.addItem(quiz.getName() + " - " + ((int) quiz.getScore()) + "/" + ((int) quiz.getScorePossible()) + " point");
+
+        int totalType = quiz.getQuizQuestion().length;
+        int typeText = 0;
+        for (QuizQuestion quizQuestion : quiz.getQuizQuestion()) {
+            if (quizQuestion.getType().equals("text")) {
+                typeText++;
+            }
+        }
+        return "";
+
+    }
+
     private void inpSetEnbled(boolean enbled) {
         tfCookie.setEnabled(enbled);
         btnLogin.setEnabled(enbled);
@@ -425,15 +462,15 @@ public class FormMain extends javax.swing.JFrame {
         cbbQuiz.setEnabled(enbled);
         btnSolution.setEnabled(enbled);
     }
-    
+
     private void showProcess(SolutionRunnable[] solutionThreadPools, int time, boolean finish) {
         int len = solutionThreadPools.length;
         boolean useSharp = false;
-        String show = "Solving " + Function.time(time) + (finish ? " - " + len + " Quiz has been completed!" : "...") + "##";
+        String show = "Solving " + Utilities.toStringDate(time) + (finish ? " - " + len + " Quiz has been completed!" : "...") + "##";
         for (int i = 0; i < len; i++) {
-            int quiz = Function.getInt(solutionThreadPools[i].getQuiz().getName());
+            int quiz = Utilities.getInt(solutionThreadPools[i].getQuiz().getName());
             String name = solutionThreadPools != null ? quiz != -1 ? quiz + ":" : "FT:" : "";
-            String score = name + (solutionThreadPools != null ? Function.roundReal(solutionThreadPools[i].getScorePresent(), 1) + ":" : "0:");
+            String score = name + (solutionThreadPools != null ? Utilities.roundReal(solutionThreadPools[i].getScorePresent(), 1) + ":" : "0:");
             switch (solutionThreadPools[i].getStatus()) {
                 case -1:
                     score += "! - ";
@@ -458,7 +495,7 @@ public class FormMain extends javax.swing.JFrame {
         show = show.substring(0, show.length() - 3);
         showProcess(show);
     }
-    
+
     private void showProcess(String s) {
         String line = ".....................................";
         String br = "<br>";
@@ -476,19 +513,7 @@ public class FormMain extends javax.swing.JFrame {
         show += "</center></html>";
         lbProcess.setText(show);
     }
-    
-    private void alertInf(String s) {
-        JOptionPane.showMessageDialog(this, s, "AutoCMS Info!!!", JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    private void alertWar(String s) {
-        JOptionPane.showMessageDialog(this, s, "AutoCMS Warning!!!", JOptionPane.WARNING_MESSAGE);
-    }
-    
-    private void alertErr(String s) {
-        JOptionPane.showMessageDialog(this, s, "AutoCMS Error!!!", JOptionPane.ERROR_MESSAGE);
-    }
-    
+
     private void init() {
         setTitle(Main.APP_NAME + " v" + Main.APP_VER + " - " + Main.APP_SLOGAN);
         lbTitle.setText(Main.APP_NAME);
