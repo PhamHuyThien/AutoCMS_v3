@@ -1,2 +1,3 @@
-/client/dist/
-/client/build/
+/dist/
+/build/
+/src/test/
