@@ -12,6 +12,9 @@
 
 ## `Lịch sử cập nhật`
 
+### v3.3.1
+- Cập nhật lại máy chủ!
+
 ### v3.3.0
 - Cập nhật lại full source (Update lớn nhất từ trước đến nay)
 - fix vỡ layout khi có số lượng quiz > 10

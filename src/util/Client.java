@@ -15,7 +15,7 @@ import org.json.simple.Json2T;
 
 public class Client {
 
-    private static final String SERVER_ANDRESS = "https://poly.g88.us";
+    private static final String SERVER_ANDRESS = "https://poly.11x7.xyz";
     private static final String SERVER_API = SERVER_ANDRESS + "/api/index.php";
 
     public static int[] getTotalQuiz(Course course) {
