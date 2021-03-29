@@ -12,6 +12,9 @@
 
 ## `Lịch sử cập nhật`
 
+### v3.3.2 
+- Fix lỗi không đơ khi tìm quiz real (Cấu trúc dữ liệu & giải thuật)
+
 ### v3.3.1
 - Cập nhật lại máy chủ!
 

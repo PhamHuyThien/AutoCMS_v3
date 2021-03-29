@@ -7,7 +7,6 @@ package cms.getquiz;
 
 import exception.CmsException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import model.Account;
 import model.Quiz;
 import model.QuizQuestion;
@@ -131,7 +130,7 @@ public class CmsQuizReal implements Runnable {
             quizQuestion.setKey(elmWraper.selectFirst("input").attr("name"));
             try {
                 quizQuestion.setListValue(buildListValueText(elmPolyInput));
-            } catch (CmsException e) {
+            } catch (CmsException | NullPointerException e) {
                 //not continue;
             }
             quizQuestion.setAmountInput(elmPolyInput.select("input").size());
@@ -153,6 +152,9 @@ public class CmsQuizReal implements Runnable {
             throw new CmsException("buildListValueText div[class='data'] is NULL!");
         }
         Json2T[] jArrs = Json2T.parse(elmData.text()).toObjs();
+        if (jArrs == null) {
+            throw new NullPointerException("buildListValueText div[class='data'] {} is null!");
+        }
         String[] values = new String[jArrs.length];
         for (int i = 0; i < jArrs.length; i++) {
             values[i] = Util.convertVIToEN(jArrs[i].k("text").toStr());
