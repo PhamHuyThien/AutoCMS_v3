@@ -380,13 +380,11 @@ public class FormMain extends javax.swing.JFrame {
             for (Course course : Main.courses) {
                 cbbCourse.addItem(course.getName());
             }
-            //
             inpSetEnbled(true);
             cbbQuiz.setEnabled(false);
             btnSolution.setEnabled(false);
             showProcess("Login done!");
-            //
-            Client.sendAnalysis(Main.account);
+            Client.pushAnalysis(Main.account);
         }).start();
     }
 
@@ -416,8 +414,8 @@ public class FormMain extends javax.swing.JFrame {
                 Main.courses[id - 1].setQuiz(quizNews);
                 courseSelect.setQuiz(quizNews);
                 //
-                Client.sendTotalQuiz(courseSelect);
-                int[] safetyQuiz = Client.getTotalQuiz(courseSelect);
+                Client.pushCourse(courseSelect);
+                int[] safetyQuiz = Client.getCourse(courseSelect);
                 //
                 if (safetyQuiz != null) { //lấy được dữ liệu trên server
                     if (safetyQuiz[1] < Main.ADMIN_QUIZ_SAFETY) { //chưa đủ độ an toàn

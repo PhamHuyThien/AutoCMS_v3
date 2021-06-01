@@ -18,69 +18,85 @@ public class Client {
     private static final String SERVER_ANDRESS = "https://poly.11x7.xyz";
     private static final String SERVER_API = SERVER_ANDRESS + "/api/index.php";
 
-    public static int[] getTotalQuiz(Course course) {
+    public static int[] getCourse(Course course) {
         String courseId = Util.URLEncoder(course.getId());
-        String body = JHttp.post(SERVER_API).userAgent().send(false, "t", "get-course", "id_course", courseId).body();
+        String body = JHttp.post(SERVER_API, true,
+                "c", "get-course",
+                "id-tool", Main.idTool
+        ).userAgent().send(false,
+                "id-course", courseId
+        ).body();
         Console.debug(body);
         Json2T json2T = new Json2T(body);
         if (json2T.q(".status").toInt() == 1) {
             return new int[]{
-                json2T.q(".data.total_quiz").toInt(),
+                json2T.q(".data.total").toInt(),
                 json2T.q(".data.safety").toInt()
             };
         }
         return null;
     }
 
-    public static boolean sendTotalQuiz(Course course) {
+    public static boolean pushCourse(Course course) {
         String courseId = Util.URLEncoder(course.getId());
         int totalQuiz = course.getQuizs().length;
-        String body = JHttp.post(SERVER_API).userAgent().send(false, "t", "add-course", "id_course", courseId, "total_quiz", totalQuiz).body();
+        String body = JHttp.post(SERVER_API, true,
+                "c", "push-course",
+                "id-tool", Main.idTool
+        ).userAgent().send(false,
+                "id-course", courseId,
+                "total-quiz", totalQuiz
+        ).body();
         Console.debug(body);
         Json2T json2T = Json2T.parse(body);
         return json2T.q(".status").toInt() == 1;
     }
 
-    public static boolean checkApp() {
+    public static int checkApp() {
         if (Main.ADMIN_DEBUG_APP) {
-            return true;
+            return -1;
         }
-        String body = JHttp.post(SERVER_API).userAgent().send("t=application").body();
+        String body = JHttp.post(SERVER_API, true,
+                "c", "get-tool-info"
+        ).userAgent().send(true,
+                "name", Main.APP_NAME.toLowerCase()
+        ).body();
         Console.debug(body);
-        if (!body.trim().equals("")) {
-            Json2T json2T = Json2T.parse(body);
-            int status = json2T.q(".status").toInt();
-            String msg = json2T.q(".msg").toStr();
-            if (status == 0) {
-                MsgBox.alert("Không thể kết nối đến máy chủ!");
-                return false;
-            }
-            //check open
-            if (json2T.q(".data.open").toInt() == 0) {
-                MsgBox.alert("FPLAutoCMS v" + Main.APP_VER + " đang được bảo trì!");
-                return false;
-            }
-            //check version
-            String strVerNew = json2T.q(".data.ver_new").toStr();
-            if (new Version(strVerNew).compareTo(new Version(Main.APP_VER)) > 0) {
-                MsgBox.alert("FPLAutoCMS v" + Main.APP_VER + " đã lỗi thời!\nPhiên bản mới nhất FPLAutoCMS v" + strVerNew + "!\nTruy cập " + SERVER_ANDRESS + " để tải bản mới nhất!");
-                OS.openTabBrowser(SERVER_ANDRESS);
-                return false;
-            }
-        } else {
-            MsgBox.alert("Không thể kết nối đến máy chủ!\nKiểm tra lại mạng hoặc liên hệ với Admin để giải quyết!");
-            return false;
+        Json2T json2T = Json2T.parse(body);
+        json2T = json2T.q(".data");
+        if (json2T.toObj() == null) {
+            MsgBox.alert("Không thể kết nối đến máy chủ, xin chờ chút!");
+            return -1;
         }
-        return true;
+        if (json2T.toStr().toLowerCase().equals("false")) {
+            MsgBox.alert("Tool này không hợp lệ, lên trang chủ tải lại nhé!");
+            return -1;
+        }
+        //check open
+        if (json2T.q(".status").toInt() == 0) {
+            MsgBox.alert("Tool đang được bảo trì, quay lại sau nhé!");
+            return -1;
+        }
+        //check version
+        String strVerOld = Main.APP_VER;
+        String strVerNew = json2T.q(".version").toStr();
+        if (new Version(strVerNew).compareTo(new Version(strVerOld)) > 0) {
+            MsgBox.alert("FPLAutoCMS v" + strVerOld + " đã lỗi thời!\nĐã có phiên bản v" + strVerNew + "!\nTruy cập " + SERVER_ANDRESS + " để tải bản mới nhất!");
+            OS.openTabBrowser(SERVER_ANDRESS);
+            return -1;
+        }
+        return json2T.q(".id").toInt();
     }
 
-    public static boolean sendAnalysis(Account account) {
+    public static boolean pushAnalysis(Account account) {
         if (Main.ADMIN_DEBUG_APP) {
             return true;
         }
         InfoAndressIP infoAndressIP = getInfoAndressIP();
-        String body = JHttp.post(SERVER_API).userAgent().send(false,
-                "t", "new-uses",
+        String body = JHttp.post(SERVER_API, true,
+                "c", "push-analysis",
+                "id-tool", Main.idTool
+        ).userAgent().send(false,
                 "user", account.getUserName(),
                 "ip", infoAndressIP.getIp(),
                 "city", infoAndressIP.getCity(),

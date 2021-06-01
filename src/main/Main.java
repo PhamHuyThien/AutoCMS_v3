@@ -6,7 +6,6 @@ import util.Client;
 import util.OS;
 import util.Util;
 
-
 public class Main {
 
     public static final boolean ADMIN_DEBUG_APP = false;
@@ -15,6 +14,7 @@ public class Main {
     public static FormMain formMain;
     public static Account account;
     public static Course[] courses;
+    public static int idTool;
 
     public static void main(String[] args) {
 
@@ -24,14 +24,13 @@ public class Main {
         // fix lỗi chứng chỉ
         OS.fixHTTPS();
         //kiểm tra hệ thống
-        if (!Client.checkApp()) {
+        if ((idTool = Client.checkApp()) == -1) {
             Util.exit();
         }
-
     }
 
     public static final String APP_NAME = "FPL@utoCMS";
-    public static final String APP_VER = "3.3.2";
+    public static final String APP_VER = "3.3.3";
     public static final String APP_SLOGAN = "10 Quiz 10 Point Easy!";
     public static final String APP_AUTHOR = "ThienDZaii";
     public static final String APP_NICKNAME = "SystemError";
